@@ -1,0 +1,50 @@
+export type EventType = 'limited' | 'unlimited';
+
+export interface Event {
+	id: string;
+	name: string;
+	date: string;
+	time: string;
+	location: string;
+	type: EventType;
+	attendee_limit?: number;
+	created_at: string;
+	updated_at: string;
+}
+
+export interface RSVP {
+	id: string;
+	event_id: string;
+	name: string;
+	user_id: string;
+	created_at: string;
+}
+
+export interface CreateEventData {
+	name: string;
+	date: string;
+	time: string;
+	location: string;
+	type: EventType;
+	attendee_limit?: number;
+}
+
+export interface DatabaseEvent {
+	id: string;
+	name: string;
+	date: string;
+	time: string;
+	location: string;
+	type: EventType;
+	attendee_limit?: number;
+	created_at: string;
+	updated_at: string;
+}
+
+export interface DatabaseRSVP {
+	id: string;
+	event_id: string;
+	name: string;
+	user_id: string;
+	created_at: string;
+}
