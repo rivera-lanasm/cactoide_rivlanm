@@ -25,7 +25,7 @@
 				</button>
 			</div>
 
-			<!-- Desktop Navigation -->
+			<!-- Navigation -->
 			<div class="md:flex md:items-center md:space-x-8">
 				<button
 					on:click={() => navigateTo('/')}
@@ -39,6 +39,13 @@
 					class={isActive('/create') ? 'text-violet-400' : 'cursor-pointer'}
 				>
 					Create
+				</button>
+
+				<button
+					on:click={() => navigateTo('/event')}
+					class={isActive('/event') ? 'text-violet-400' : 'cursor-pointer'}
+				>
+					List
 				</button>
 			</div>
 		</div>

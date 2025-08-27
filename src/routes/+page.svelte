@@ -43,12 +43,6 @@
 					>
 						Create Event Now
 					</button>
-					<button
-						on:click={() => goto('/about')}
-						class="rounded-sm border-2 px-8 py-4 font-bold duration-400 hover:scale-110 hover:bg-white/10"
-					>
-						Learn More
-					</button>
 				</div>
 			</div>
 		</div>

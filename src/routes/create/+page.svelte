@@ -2,6 +2,7 @@
 	import { eventsStore } from '$lib/stores/events-supabase';
 	import type { CreateEventData, EventType } from '$lib/types';
 	import { goto } from '$app/navigation';
+	import { onMount } from 'svelte';
 
 	let eventData: CreateEventData = {
 		name: '',
@@ -14,9 +15,25 @@
 
 	let errors: Record<string, string> = {};
 	let isSubmitting = false;
+	let currentUserId = '';
 
 	// Get today's date in YYYY-MM-DD format for min attribute
 	const today = new Date().toISOString().split('T')[0];
+
+	// Generate or retrieve user ID on mount
+	onMount(() => {
+		generateUserId();
+	});
+
+	function generateUserId() {
+		// Generate a unique user ID and store it in localStorage
+		let userId = localStorage.getItem('eventCactusUserId');
+		if (!userId) {
+			userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+			localStorage.setItem('eventCactusUserId', userId);
+		}
+		currentUserId = userId;
+	}
 
 	function validateForm(): boolean {
 		errors = {};
@@ -58,7 +75,7 @@
 			// Simulate API call delay
 			await new Promise((resolve) => setTimeout(resolve, 1000));
 
-			const eventId = await eventsStore.createEvent(eventData);
+			const eventId = await eventsStore.createEvent(eventData, currentUserId);
 
 			// Redirect to the event page
 			goto(`/event/${eventId}`);

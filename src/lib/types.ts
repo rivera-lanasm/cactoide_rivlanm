@@ -8,6 +8,7 @@ export interface Event {
 	location: string;
 	type: EventType;
 	attendee_limit?: number;
+	user_id: string;
 	created_at: string;
 	updated_at: string;
 }
@@ -37,6 +38,7 @@ export interface DatabaseEvent {
 	location: string;
 	type: EventType;
 	attendee_limit?: number;
+	user_id: string;
 	created_at: string;
 	updated_at: string;
 }

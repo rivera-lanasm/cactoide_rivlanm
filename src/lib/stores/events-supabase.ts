@@ -28,6 +28,7 @@ function convertDatabaseEvent(dbEvent: DatabaseEvent): Event {
 		location: dbEvent.location,
 		type: dbEvent.type,
 		attendee_limit: dbEvent.attendee_limit,
+		user_id: dbEvent.user_id,
 		created_at: dbEvent.created_at,
 		updated_at: dbEvent.updated_at
 	};
@@ -49,7 +50,7 @@ export const eventsStore = {
 	subscribeRSVPs: rsvps.subscribe,
 
 	// Create a new event
-	createEvent: async (eventData: CreateEventData): Promise<string> => {
+	createEvent: async (eventData: CreateEventData, userId: string): Promise<string> => {
 		const eventId = generateEventId();
 		const now = new Date().toISOString();
 
@@ -62,6 +63,7 @@ export const eventsStore = {
 				location: eventData.location,
 				type: eventData.type,
 				attendee_limit: eventData.attendee_limit,
+				user_id: userId,
 				created_at: now,
 				updated_at: now
 			});
@@ -72,6 +74,7 @@ export const eventsStore = {
 			const newEvent: Event = {
 				id: eventId,
 				...eventData,
+				user_id: userId,
 				created_at: now,
 				updated_at: now
 			};
@@ -244,6 +247,70 @@ export const eventsStore = {
 		} catch (error) {
 			console.error('Error fetching event with RSVPs:', error);
 			return undefined;
+		}
+	},
+
+	// Get events by user ID
+	getEventsByUser: async (userId: string): Promise<Event[]> => {
+		try {
+			const { data, error } = await supabase
+				.from('events')
+				.select('*')
+				.eq('user_id', userId)
+				.order('created_at', { ascending: false });
+
+			if (error) throw error;
+
+			const userEvents = data?.map(convertDatabaseEvent) || [];
+
+			// Update local store
+			userEvents.forEach((event) => {
+				events.update((currentEvents) => {
+					const newMap = new Map(currentEvents);
+					newMap.set(event.id, event);
+					return newMap;
+				});
+			});
+
+			return userEvents;
+		} catch (error) {
+			console.error('Error fetching user events:', error);
+			return [];
+		}
+	},
+
+	// Delete event (only by the user who created it)
+	deleteEvent: async (eventId: string, userId: string): Promise<boolean> => {
+		try {
+			// First verify the user owns this event
+			const event = await eventsStore.getEvent(eventId);
+			if (!event || event.user_id !== userId) {
+				return false; // User doesn't own this event
+			}
+
+			// Delete the event (RSVPs will be deleted automatically due to CASCADE)
+			const { error } = await supabase.from('events').delete().eq('id', eventId);
+
+			if (error) throw error;
+
+			// Remove from local store
+			events.update((currentEvents) => {
+				const newMap = new Map(currentEvents);
+				newMap.delete(eventId);
+				return newMap;
+			});
+
+			// Remove RSVPs from local store
+			rsvps.update((currentRSVPs) => {
+				const newMap = new Map(currentRSVPs);
+				newMap.delete(eventId);
+				return newMap;
+			});
+
+			return true;
+		} catch (error) {
+			console.error('Error deleting event:', error);
+			return false;
 		}
 	}
 };
