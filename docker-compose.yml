@@ -1,38 +1,42 @@
 version: '3.8'
 
 services:
-  # PostgreSQL Database
+  # Database
   postgres:
     image: postgres:15-alpine
     container_name: cactoide-db
     environment:
-      POSTGRES_DB: cactoied_database
-      POSTGRES_USER: cactoide
-      POSTGRES_PASSWORD: cactoide_password
+      POSTGRES_DB: ${POSTGRES_DB:-cactoied_database}
+      POSTGRES_USER: ${POSTGRES_USER:-cactoide}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-cactoide_password}
     ports:
-      - '5432:5432'
+      - '${POSTGRES_PORT:-5432}:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U cactoide -d cactoied_database']
+      test:
+        [
+          'CMD-SHELL',
+          'pg_isready -U ${POSTGRES_USER:-cactoide} -d ${POSTGRES_DB:-cactoied_database}'
+        ]
       interval: 10s
       timeout: 5s
       retries: 5
     networks:
       - cactoide-network
 
-  # SvelteKit Application
+  # Application
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ghcr.io/polaroi8d/cactoide/cactoide:${APP_VERSION:-latest}
     container_name: cactoide-app
     ports:
-      - '3000:3000'
+      - '${PORT:-3000}:3000'
     environment:
-      DATABASE_URL: postgres://cactoide:cactoide_password@postgres:5432/cactoied_database
-      NODE_ENV: production
+      DATABASE_URL: postgres://${POSTGRES_USER:-cactoide}:${POSTGRES_PASSWORD:-cactoide_password}@postgres:${POSTGRES_PORT:-5432}/${POSTGRES_DB:-cactoied_database}
+      NODE_ENV: ${NODE_ENV:-dev}
+      PORT: 3000
+      HOSTNAME: ${HOSTNAME:-0.0.0.0}
     depends_on:
       postgres:
         condition: service_healthy

@@ -25,15 +25,7 @@ A mobile-first event RSVP platform that lets you create events, share unique URL
 - **🛡️ Smart Limits** - Choose between unlimited RSVPs or set a limited capacity. Perfect for any event size.
 - **✨ Effortless Simplicity** - Designed to be instantly clear and easy. No learning curve — just open, create, and go.
 
-### 🏗️ Technology
-
-- **SvelteKit** - Full-stack web framework
-- **Tailwind CSS** - Utility-first CSS framework
-- **TypeScript** - Type-safe development
-- **PostgreSQL** - Robust relational database
-- **Drizzle ORM** - Type-safe database queries
-
-### 🚀 Quick Start
+### Quick Start
 
 ```bash
 git clone https://github.com/polaroi8d/cactoide/
@@ -44,13 +36,13 @@ make db-only
 npm run dev -- --open
 ```
 
-Your app will be available at `http://localhost:5173`
+Your app will be available at `http://localhost:5173`. You can use the Makefile commands to run the application or the database, eg.: `make db-only`.
 
-### 🚀 Self-Host
+### Self-Host
 
-WIP
+Use the [`docker-compose.yml`](docker-compose.yml) file to setup the application with the database. You can define all ENV variables in the [`.env`](.env.example) file from the `.env.example`.
 
-### 📄 License
+### License
 
 This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
 
