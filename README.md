@@ -2,8 +2,7 @@
 
 Events that thrive anywhere.
 
-Like the cactus, great events bloom under any condition when managed with care. Cactoide(ae) helps you streamline RSVPs, simplify coordination, and keep every detail efficient—so your gatherings are resilient, vibrant, and unforgettabl
-e.
+Like the cactus, great events bloom under any condition when managed with care. Cactoide(ae) helps you streamline RSVPs, simplify coordination, and keep every detail efficient—so your gatherings are resilient, vibrant, and unforgettable.
 
 <p align="center">
   <a href="https://cactoide.dalev.hu/" target="blank">

@@ -227,7 +227,7 @@
 				<div class="rounded-sm border p-6 shadow-2xl backdrop-blur-sm">
 					<div class="mb-4 flex items-center justify-between">
 						<h3 class=" text-xl font-bold">Attendees</h3>
-						<span class="text-crypto-gold text-2xl font-bold">{rsvps.length}</span>
+						<span class="text-2xl font-bold">{rsvps.length}</span>
 					</div>
 
 					{#if rsvps.length === 0}

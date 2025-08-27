@@ -11,41 +11,28 @@
 </svelte:head>
 
 <div class="flex min-h-screen flex-col">
-	<!-- Hero Section -->
-	<section class="from-dark-900 to-dark-950 relative overflow-hidden bg-gradient-to-b pt-20 pb-20">
+	<section class="mx-auto w-full pt-20 pb-20 md:w-3/4">
 		<div class="container mx-auto px-4 text-center">
-			<!-- Animated background elements -->
-			<div class="pointer-events-none absolute inset-0 overflow-hidden">
-				<div class="animate-float absolute top-20 left-10 h-32 w-32 rounded-full blur-xl"></div>
-				<div
-					class="bg-crypto-neon/10 animate-float absolute top-40 right-20 h-24 w-24 rounded-full blur-xl"
-					style="animation-delay: -2s;"
-				></div>
-				<div
-					class="bg-crypto-cyber/10 animate-float absolute bottom-20 left-1/4 h-20 w-20 rounded-full blur-xl"
-					style="animation-delay: -4s;"
-				></div>
-			</div>
+			<h1 class="text-5xl font-bold md:text-7xl lg:text-8xl">Cactoide(ea) 🌵</h1>
 
-			<div class="relative z-10">
-				<h1 class="bg-gradient-to-r bg-clip-text text-5xl font-bold md:text-7xl lg:text-8xl">
-					Cactoide 🌵
-				</h1>
+			<h2 class="mt-6 text-xl md:text-2xl">The Ultimate RSVP Platform</h2>
+			<p class="mt-4 text-lg italic md:text-xl">
+				Create, share, and manage events with zero friction.
+			</p>
 
-				<p class="mt-6 text-xl md:text-2xl">The Ultimate RSVP Platform</p>
-				<p class="mt-4 text-lg md:text-xl">Create, share, and manage events with zero friction.</p>
+			<h2 class="mt-6 pt-8 text-xl md:text-2xl">Why Cactoide(ae)?🌵</h2>
+			<p class="mt-4 text-lg md:text-xl">
+				Like the cactus, great events bloom under any condition when managed with care. Cactoide(ae)
+				helps you streamline RSVPs, simplify coordination, and keep every detail efficient—so your
+				gatherings are resilient, vibrant, and unforgettabl e.
+			</p>
 
-				<div
-					class="mt-10 flex flex-col items-center justify-center space-y-4 sm:flex-row sm:space-y-0 sm:space-x-6"
-				>
-					<button
-						on:click={() => goto('/create')}
-						class="rounded-sm border-2 border-violet-500 px-8 py-4 font-bold duration-400 hover:scale-110 hover:bg-violet-500/10"
-					>
-						Create Event Now
-					</button>
-				</div>
-			</div>
+			<button
+				on:click={() => goto('/create')}
+				class="mt-8 rounded-sm border-2 border-violet-500 px-8 py-4 font-bold duration-400 hover:scale-110 hover:bg-violet-500/10"
+			>
+				Create Event Now
+			</button>
 		</div>
 	</section>
 
