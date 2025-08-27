@@ -13,7 +13,6 @@ e.
   </a>
 </p>
 
-
 #### What is it?
 
 A mobile-first event RSVP platform that lets you create events, share unique URLs, and collect RSVPs without any registration required.
