@@ -97,7 +97,7 @@
 							</div>
 							<div>
 								<p class="font-semibold text-white">
-									{formatDate(event.date, event.time)}
+									{formatDate(event.date)}
 									<span class="font-medium text-violet-400">-</span>
 									{formatTime(event.time)}
 								</p>
@@ -237,7 +237,7 @@
 						</div>
 					{:else}
 						<div class="space-y-3">
-							{#each rsvps as attendee, index}
+							{#each rsvps as attendee, i (i)}
 								<div
 									class="flex items-center justify-between rounded-sm border border-white/20 p-3"
 								>

@@ -49,7 +49,7 @@
 				alert('Failed to delete event. You may not have permission to delete this event.');
 			}
 		} catch (err) {
-			alert('An error occurred while deleting the event');
+			alert(`An error occurred while deleting the event: ${err}`);
 		}
 	}
 
@@ -88,7 +88,7 @@
 				</div>
 
 				<div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-					{#each userEvents as event}
+					{#each userEvents as event, i (i)}
 						<div class="rounded-sm border border-slate-200 p-6 shadow-sm">
 							<div class="mb-4">
 								<div class="mb-3 flex items-center justify-between">

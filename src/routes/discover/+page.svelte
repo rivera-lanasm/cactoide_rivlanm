@@ -53,7 +53,7 @@
 				</div>
 
 				<div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-					{#each publicEvents as event}
+					{#each publicEvents as event, i (i)}
 						<div class="rounded-sm border border-slate-200 p-6 shadow-sm">
 							<div class="mb-4">
 								<h3 class="mb-2 text-xl font-bold text-slate-300">{event.name}</h3>
