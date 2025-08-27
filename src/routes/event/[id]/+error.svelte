@@ -6,18 +6,10 @@
 </script>
 
 <svelte:head>
-	<title>Error - Event Cactus</title>
+	<title>Error - Cactoide</title>
 </svelte:head>
 
 <div class="flex min-h-screen flex-col">
-	<!-- Page Header -->
-	<div class=" border-b py-6">
-		<div class="container mx-auto px-4 text-center">
-			<h1 class=" font-display mb-2 text-2xl font-bold">Error</h1>
-			<p class="">Something went wrong</p>
-		</div>
-	</div>
-
 	<!-- Error Content -->
 	<div class="container mx-auto flex-1 px-4 py-8">
 		<div class="mx-auto max-w-md text-center">
@@ -25,26 +17,25 @@
 				<div class="mb-4 text-6xl text-red-400">🚨</div>
 				<h2 class="mb-4 text-2xl font-bold text-red-400">Something Went Wrong</h2>
 
-				<p class=" mb-6">
+				<p class="mb-6">
 					{error?.message || 'An unexpected error occurred.'}
 				</p>
-
-				<div class="space-y-3">
-					<button
-						on:click={() => goto('/')}
-						class="  w-full rounded-sm px-6 py-3 font-semibold text-white transition-colors duration-200"
-					>
-						Create New Event
-					</button>
-
-					<button
-						on:click={() => window.location.reload()}
-						class="bg-dark-600 hover:bg-dark-500 w-full rounded-sm px-6 py-3 font-semibold text-white transition-colors duration-200"
-					>
-						Try Again
-					</button>
-				</div>
 			</div>
+		</div>
+		<div class="mx-auto mt-8 max-w-md text-center">
+			<button
+				on:click={() => goto('/create')}
+				class="rounded-sm border-2 border-violet-500 px-8 py-4 font-bold duration-400 hover:scale-110 hover:bg-violet-500/10"
+			>
+				Create New Event
+			</button>
+
+			<button
+				on:click={() => window.location.reload()}
+				class="rounded-sm border-2 border-violet-500 px-8 py-4 font-bold duration-400 hover:scale-110 hover:bg-violet-500/10"
+			>
+				Try Again
+			</button>
 		</div>
 	</div>
 </div>

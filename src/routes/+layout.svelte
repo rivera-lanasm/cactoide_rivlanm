@@ -1,10 +1,12 @@
 <script>
 	import '../app.css';
 	import Navbar from '$lib/components/Navbar.svelte';
+
+	let { data } = $props();
 </script>
 
 <svelte:head>
-	<title>Event Cactus -</title>
+	<title>Cactoide -</title>
 	<meta name="description" content="Create and manage event RSVPs" />
 	<meta name="apple-mobile-web-app-capable" content="yes" />
 	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -25,7 +27,14 @@
 		<footer class="py-12">
 			<div class="container mx-auto px-4 text-center">
 				<div class="text-sm">
-					<p>&copy; 2025 Event Cactus</p>
+					<p class="mb-4 text-gray-100/80">
+						Your UserID storated as a cookie: <span class="font-bold text-violet-400"
+							>{data.cactoideUserId
+								? data.cactoideUserId
+								: 'First time visiting. Generating new UserID...'}</span
+						>
+					</p>
+					<p>&copy; 2025 Cactoide</p>
 				</div>
 			</div>
 		</footer>

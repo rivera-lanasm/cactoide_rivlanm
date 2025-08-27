@@ -1,43 +1,16 @@
 <script lang="ts">
-	import { eventsStore } from '$lib/stores/events-supabase';
 	import type { Event } from '$lib/types';
 	import { goto } from '$app/navigation';
-	import { onMount } from 'svelte';
+
+	export let data: { events: Event[] };
 
 	let userEvents: Event[] = [];
-	let isLoading = true;
-	let error = '';
 	let currentUserId = '';
 	let showDeleteModal = false;
 	let eventToDelete: Event | null = null;
 
-	onMount(() => {
-		generateUserId();
-		loadUserEvents();
-	});
-
-	function generateUserId() {
-		// Generate a unique user ID and store it in localStorage
-		let userId = localStorage.getItem('eventCactusUserId');
-		if (!userId) {
-			userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-			localStorage.setItem('eventCactusUserId', userId);
-		}
-		currentUserId = userId;
-	}
-
-	async function loadUserEvents() {
-		if (!currentUserId) return;
-
-		try {
-			isLoading = true;
-			userEvents = await eventsStore.getEventsByUser(currentUserId);
-		} catch (err) {
-			error = 'Failed to load your events';
-		} finally {
-			isLoading = false;
-		}
-	}
+	// Use server-side data
+	$: userEvents = data.events;
 
 	function openDeleteModal(event: Event) {
 		eventToDelete = event;
@@ -49,17 +22,33 @@
 
 		try {
 			const eventId = eventToDelete.id;
-			const success = await eventsStore.deleteEvent(eventId, currentUserId);
-			if (success) {
-				// Remove from local list
-				userEvents = userEvents.filter((event) => event.id !== eventId);
-				showDeleteModal = false;
-				eventToDelete = null;
+
+			// Use server-side action for deletion
+			const formData = new FormData();
+			formData.append('eventId', eventId);
+			formData.append('userId', currentUserId);
+
+			const response = await fetch('?/deleteEvent', {
+				method: 'POST',
+				body: formData
+			});
+
+			if (response.ok) {
+				const result = await response.json();
+				if (result.type === 'success') {
+					showDeleteModal = false;
+					eventToDelete = null;
+
+					// ✅ Reload the page to reflect updated events
+					location.reload();
+				} else {
+					alert(result.data?.error || 'Failed to delete event');
+				}
 			} else {
-				error = 'Failed to delete event. You may not have permission to delete this event.';
+				alert('Failed to delete event. You may not have permission to delete this event.');
 			}
 		} catch (err) {
-			error = 'An error occurred while deleting the event';
+			alert('An error occurred while deleting the event');
 		}
 	}
 
@@ -89,25 +78,7 @@
 <div class="flex min-h-screen flex-col">
 	<!-- Main Content -->
 	<div class="container mx-auto mt-8 flex-1 px-4 py-8 text-white">
-		{#if isLoading}
-			<div class="mx-auto max-w-2xl text-center">
-				<div
-					class="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-b-2 border-violet-600"
-				></div>
-				<p>Loading your events...</p>
-			</div>
-		{:else if error}
-			<div class="mx-auto max-w-2xl text-center">
-				<div class="mb-4 text-4xl text-red-500">⚠️</div>
-				<p class="text-red-600">{error}</p>
-				<button
-					on:click={loadUserEvents}
-					class="rounded-sm border-2 border-violet-500 px-8 py-4 font-bold duration-400 hover:scale-110 hover:bg-violet-500/10"
-				>
-					Try Again
-				</button>
-			</div>
-		{:else if userEvents.length === 0}
+		{#if userEvents.length === 0}
 			<div class="mx-auto max-w-2xl text-center">
 				<div class="mb-4 animate-pulse text-6xl">🎉</div>
 				<h2 class="mb-4 text-2xl font-bold">No Events Yet</h2>
@@ -165,7 +136,12 @@
 										<span>{event.location}</span>
 									</div>
 									<div class="flex items-center space-x-2">
-										<span class="rounded-sm border border-slate-300 px-2 py-1 text-xs font-medium">
+										<span
+											class="rounded-sm border px-2 py-1 text-xs font-medium {event.type ===
+											'limited'
+												? 'border-amber-600 text-amber-600'
+												: 'border-teal-500 text-teal-500'}"
+										>
 											{event.type === 'limited' ? 'Limited' : 'Unlimited'}
 										</span>
 										<span

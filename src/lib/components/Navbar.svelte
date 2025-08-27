@@ -21,7 +21,7 @@
 					on:click={() => navigateTo('/')}
 					class="cursor-pointer text-2xl font-medium text-violet-400"
 				>
-					Event Cactus
+					Cactoide
 				</button>
 			</div>
 

@@ -6,7 +6,7 @@
 </script>
 
 <svelte:head>
-	<title>Error - Event Cactus</title>
+	<title>Error - Cactoide</title>
 </svelte:head>
 
 <div class="flex min-h-screen flex-col">

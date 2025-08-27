@@ -1,8 +1,10 @@
 <script lang="ts">
-	import { eventsStore } from '$lib/stores/events-supabase';
 	import type { CreateEventData, EventType } from '$lib/types';
 	import { goto } from '$app/navigation';
+	import { enhance } from '$app/forms';
 	import { onMount } from 'svelte';
+
+	export let form;
 
 	let eventData: CreateEventData = {
 		name: '',
@@ -21,70 +23,20 @@
 	// Get today's date in YYYY-MM-DD format for min attribute
 	const today = new Date().toISOString().split('T')[0];
 
-	// Generate or retrieve user ID on mount
-	onMount(() => {
-		generateUserId();
-	});
-
-	function generateUserId() {
-		// Generate a unique user ID and store it in localStorage
-		let userId = localStorage.getItem('eventCactusUserId');
-		if (!userId) {
-			userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-			localStorage.setItem('eventCactusUserId', userId);
-		}
-		currentUserId = userId;
+	// Handle form errors from server
+	$: if (form?.error) {
+		errors.server = form.error;
 	}
 
-	function validateForm(): boolean {
-		errors = {};
-
-		if (!eventData.name.trim()) {
-			errors.name = 'Event name is required';
-		}
-
-		if (!eventData.date) {
-			errors.date = 'Date is required';
-		} else if (new Date(eventData.date) < new Date(today)) {
-			errors.date = 'Date cannot be in the past';
-		}
-
-		if (!eventData.time) {
-			errors.time = 'Time is required';
-		}
-
-		if (!eventData.location.trim()) {
-			errors.location = 'Location is required';
-		}
-
-		if (
-			eventData.type === 'limited' &&
-			(!eventData.attendee_limit || eventData.attendee_limit < 1)
-		) {
-			errors.attendee_limit = 'Limit must be at least 1 for limited events';
-		}
-
-		return Object.keys(errors).length === 0;
-	}
-
-	async function handleSubmit() {
-		if (!validateForm()) return;
-
-		isSubmitting = true;
-
-		try {
-			// Simulate API call delay
-			await new Promise((resolve) => setTimeout(resolve, 1000));
-
-			const eventId = await eventsStore.createEvent(eventData, currentUserId);
-
-			// Redirect to the event page
-			goto(`/event/${eventId}`);
-		} catch (error) {
-			console.error('Error creating event:', error);
-		} finally {
-			isSubmitting = false;
-		}
+	// Pre-fill form with values from server on error
+	$: if (form?.values) {
+		eventData = {
+			...eventData,
+			...form.values,
+			attendee_limit: form.values.attendee_limit
+				? parseInt(String(form.values.attendee_limit))
+				: undefined
+		};
 	}
 
 	function handleTypeChange(type: EventType) {
@@ -96,7 +48,7 @@
 </script>
 
 <svelte:head>
-	<title>Create Event - Event Cactus</title>
+	<title>Create Event - Cactoide</title>
 </svelte:head>
 
 <div class="flex min-h-screen flex-col">
@@ -107,7 +59,33 @@
 			<div class="rounded-sm border p-8">
 				<h2 class="mb-8 text-center text-3xl font-bold text-violet-400">Create New Event</h2>
 
-				<form on:submit|preventDefault={handleSubmit} class="space-y-6">
+				<form
+					method="POST"
+					use:enhance={() => {
+						isSubmitting = true;
+						return async ({ result, update }) => {
+							isSubmitting = false;
+							if (result.type === 'failure') {
+								// Handle validation errors
+								if (result.data?.error) {
+									errors.server = result.data.error;
+								}
+							}
+							update();
+						};
+					}}
+					class="space-y-6"
+				>
+					<input type="hidden" name="userId" value={currentUserId} />
+					<input type="hidden" name="type" value={eventData.type} />
+					<input type="hidden" name="visibility" value={eventData.visibility} />
+
+					{#if errors.server}
+						<div class="mb-6 rounded-sm border border-red-200 bg-red-50 p-4 text-red-700">
+							{errors.server}
+						</div>
+					{/if}
+
 					<!-- Event Name -->
 					<div>
 						<label for="name" class="text-dark-800 mb-3 block text-sm font-semibold">
@@ -115,11 +93,13 @@
 						</label>
 						<input
 							id="name"
+							name="name"
 							type="text"
 							bind:value={eventData.name}
 							class="border-dark-300 w-full rounded-sm border-2 px-4 py-3 text-slate-900 shadow-sm"
 							placeholder="Enter event name"
 							maxlength="100"
+							required
 						/>
 						{#if errors.name}
 							<p class="mt-2 text-sm font-medium text-red-600">{errors.name}</p>
@@ -134,10 +114,12 @@
 							</label>
 							<input
 								id="date"
+								name="date"
 								type="date"
 								bind:value={eventData.date}
 								min={today}
 								class="border-dark-300 w-full rounded-sm border-2 bg-white px-4 py-3 text-slate-900 shadow-sm transition-all duration-200"
+								required
 							/>
 							{#if errors.date}
 								<p class="mt-2 text-sm font-medium text-red-600">{errors.date}</p>
@@ -150,9 +132,11 @@
 							</label>
 							<input
 								id="time"
+								name="time"
 								type="time"
 								bind:value={eventData.time}
 								class="border-dark-300 w-full rounded-sm border-2 bg-white px-4 py-3 text-slate-900 shadow-sm transition-all duration-200"
+								required
 							/>
 							{#if errors.time}
 								<p class="mt-2 text-sm font-medium text-red-600">{errors.time}</p>
@@ -167,11 +151,13 @@
 						</label>
 						<input
 							id="location"
+							name="location"
 							type="text"
 							bind:value={eventData.location}
 							class="border-dark-300 placeholder-dark-500 w-full rounded-sm border-2 px-4 py-3 text-slate-900 shadow-sm transition-all"
 							placeholder="Enter location"
 							maxlength="200"
+							required
 						/>
 						{#if errors.location}
 							<p class="mt-2 text-sm font-medium text-red-600">{errors.location}</p>
@@ -215,12 +201,14 @@
 							</label>
 							<input
 								id="attendee_limit"
+								name="attendee_limit"
 								type="number"
 								bind:value={eventData.attendee_limit}
 								min="1"
 								max="1000"
 								class="border-dark-300 w-full rounded-sm border-2 bg-white px-4 py-3 text-slate-900 shadow-sm transition-all duration-200"
 								placeholder="Enter limit"
+								required
 							/>
 							{#if errors.attendee_limit}
 								<p class="mt-2 text-sm font-medium text-red-600">{errors.attendee_limit}</p>

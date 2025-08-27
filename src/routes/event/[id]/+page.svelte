@@ -1,50 +1,38 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { eventsStore } from '$lib/stores/events-supabase';
 	import type { Event, RSVP } from '$lib/types';
 	import { goto } from '$app/navigation';
-	import { onMount } from 'svelte';
+	import { enhance } from '$app/forms';
 
-	let event: Event | undefined;
+	export let data: { event: Event; rsvps: RSVP[]; userId: string };
+	export let form;
+
+	let event: Event;
 	let rsvps: RSVP[] = [];
 	let newAttendeeName = '';
 	let isAddingRSVP = false;
 	let error = '';
 	let success = '';
-	let currentUserId = '';
+
+	// Use server-side data
+	$: event = data.event;
+	$: rsvps = data.rsvps;
+	$: currentUserId = data.userId;
+
+	// Handle form errors from server
+	$: if (form?.error) {
+		error = form.error;
+		success = '';
+	}
+
+	// Handle form success from server
+	$: if (form?.success) {
+		success = 'RSVP added successfully!';
+		error = '';
+		newAttendeeName = '';
+	}
 
 	const eventId = $page.params.id;
-
-	onMount(() => {
-		loadEvent();
-		generateUserId();
-	});
-
-	function generateUserId() {
-		// Generate a unique user ID and store it in localStorage
-		let userId = localStorage.getItem('eventCactusUserId');
-		if (!userId) {
-			userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-			localStorage.setItem('eventCactusUserId', userId);
-		}
-		currentUserId = userId;
-	}
-
-	async function loadEvent() {
-		if (!eventId) return;
-
-		try {
-			const result = await eventsStore.getEventWithRSVPs(eventId);
-			if (result) {
-				event = result.event;
-				rsvps = result.rsvps;
-			} else {
-				error = 'Event not found';
-			}
-		} catch (err) {
-			error = 'Failed to load event';
-		}
-	}
 
 	function formatDate(dateString: string, timeString: string): string {
 		const date = new Date(`${dateString}T${timeString}`);
@@ -59,50 +47,24 @@
 		return `${hours}:${minutes}`;
 	}
 
-	async function addRSVP() {
-		if (!newAttendeeName.trim() || !eventId) return;
-
-		isAddingRSVP = true;
-		error = '';
-		success = '';
-
-		try {
-			const rsvpSuccess = await eventsStore.addRSVP(eventId, newAttendeeName.trim(), currentUserId);
-
-			if (rsvpSuccess) {
-				newAttendeeName = '';
-				await loadEvent(); // Reload to get updated attendee list
-				success = 'RSVP added successfully!';
-			} else {
-				error = 'Failed to add RSVP. Event might be full or name already exists.';
-			}
-		} catch (err) {
-			error = 'An error occurred while adding RSVP.';
-		} finally {
-			isAddingRSVP = false;
-		}
-	}
-
-	async function removeRSVP(rsvpId: string) {
-		if (!eventId) return;
-
-		const success = await eventsStore.removeRSVP(eventId, rsvpId);
-		if (success) {
-			await loadEvent(); // Reload to get updated attendee list
-		}
-	}
-
 	function copyEventLink() {
 		const url = `${window.location.origin}/event/${eventId}`;
 		navigator.clipboard.writeText(url).then(() => {
 			success = 'Event link copied to clipboard!';
-			setTimeout(() => (success = ''), 4000);
+			setTimeout(() => {
+				success = '';
+			}, 3000);
 		});
+	}
+
+	function clearMessages() {
+		error = '';
+		success = '';
 	}
 </script>
 
 <svelte:head>
-	<title>{event?.name || 'Event'} - Event Cactus</title>
+	<title>{event?.name || 'Event'} - Cactoide</title>
 </svelte:head>
 
 <div class="flex min-h-screen flex-col">
@@ -180,16 +142,20 @@
 						<!-- Event Type, Visibility & Capacity -->
 						<div class="flex items-center justify-between rounded-sm p-3">
 							<div class="flex items-center space-x-2">
-								<span class="rounded-full border px-2 py-1 text-xs font-semibold text-violet-400">
+								<span
+									class="rounded-sm border px-2 py-1 text-xs font-medium {event.type === 'limited'
+										? 'border-amber-600 text-amber-600'
+										: 'border-teal-500 text-teal-500'}"
+								>
 									{event.type === 'limited' ? 'Limited' : 'Unlimited'}
 								</span>
 								<span
-									class="rounded-full border px-2 py-1 text-xs font-semibold {event.visibility ===
+									class="rounded-sm border px-2 py-1 text-xs font-medium {event.visibility ===
 									'public'
 										? 'border-green-300 text-green-400'
 										: 'border-orange-300 text-orange-400'}"
 								>
-									{event.visibility === 'public' ? '🌍 Public' : '🔒 Private'}
+									{event.visibility === 'public' ? 'Public' : 'Private'}
 								</span>
 							</div>
 
@@ -216,13 +182,30 @@
 							<p class="mt-1 text-sm">Maximum capacity reached</p>
 						</div>
 					{:else}
-						<form on:submit|preventDefault={addRSVP} class="space-y-4">
+						<form
+							method="POST"
+							action="?/addRSVP"
+							use:enhance={() => {
+								isAddingRSVP = true;
+								clearMessages();
+								return async ({ result, update }) => {
+									isAddingRSVP = false;
+									if (result.type === 'failure') {
+										error = result.data?.error || 'Failed to add RSVP';
+									}
+									update();
+								};
+							}}
+							class="space-y-4"
+						>
+							<input type="hidden" name="userId" value={currentUserId} />
 							<div>
 								<label for="attendeeName" class=" mb-2 block text-sm font-semibold">
 									Your Name <span class="text-red-400">*</span>
 								</label>
 								<input
 									id="attendeeName"
+									name="newAttendeeName"
 									type="text"
 									bind:value={newAttendeeName}
 									class="border-dark-300 w-full rounded-sm border-2 px-4 py-3 text-slate-900 shadow-sm"
@@ -293,20 +276,36 @@
 									</div>
 
 									{#if attendee.user_id === currentUserId}
-										<button
-											on:click={() => removeRSVP(attendee.id)}
-											class="text-dark-400 p-1 transition-colors duration-200 hover:text-red-400"
-											aria-label="Remove RSVP"
+										<form
+											method="POST"
+											action="?/removeRSVP"
+											use:enhance={() => {
+												clearMessages();
+												return async ({ result, update }) => {
+													if (result.type === 'failure') {
+														error = result.data?.error || 'Failed to remove RSVP';
+													}
+													update();
+												};
+											}}
+											style="display: inline;"
 										>
-											<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-												<path
-													stroke-linecap="round"
-													stroke-linejoin="round"
-													stroke-width="2"
-													d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-												></path>
-											</svg>
-										</button>
+											<input type="hidden" name="rsvpId" value={attendee.id} />
+											<button
+												type="submit"
+												class="text-dark-400 p-1 transition-colors duration-200 hover:text-red-400"
+												aria-label="Remove RSVP"
+											>
+												<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+													<path
+														stroke-linecap="round"
+														stroke-linejoin="round"
+														stroke-width="2"
+														d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+													></path>
+												</svg>
+											</button>
+										</form>
 									{/if}
 								</div>
 							{/each}

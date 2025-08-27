@@ -2,26 +2,14 @@
 	import { eventsStore } from '$lib/stores/events-supabase';
 	import type { Event } from '$lib/types';
 	import { goto } from '$app/navigation';
-	import { onMount } from 'svelte';
+	import type { PageData } from '../$types';
 
 	let publicEvents: Event[] = [];
-	let isLoading = true;
 	let error = '';
 
-	onMount(() => {
-		loadPublicEvents();
-	});
-
-	async function loadPublicEvents() {
-		try {
-			isLoading = true;
-			publicEvents = await eventsStore.getPublicEvents();
-		} catch (err) {
-			error = 'Failed to load public events';
-		} finally {
-			isLoading = false;
-		}
-	}
+	export let data: PageData;
+	// Use the server-side data
+	$: publicEvents = data.events;
 
 	function formatDate(dateString: string): string {
 		const date = new Date(dateString);
@@ -38,28 +26,22 @@
 </script>
 
 <svelte:head>
-	<title>Discover Events - Event Cactus</title>
+	<title>Discover Events - Cactoide</title>
 </svelte:head>
 
 <div class="flex min-h-screen flex-col">
 	<!-- Main Content -->
 	<div class="container mx-auto mt-8 flex-1 px-4 py-8 text-white">
-		{#if isLoading}
+		{#if error}
 			<div class="mx-auto max-w-2xl text-center">
-				<div
-					class="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-b-2 border-violet-600"
-				></div>
-				<p>Loading public events...</p>
-			</div>
-		{:else if error}
-			<div class="mx-auto max-w-2xl text-center">
-				<div class="mb-4 text-4xl text-red-500">⚠️</div>
+				<div class="mb-4 text-4xl">⚠️</div>
+				<p class="py-4">Something went wrong. Please try again.</p>
 				<p class="text-red-600">{error}</p>
 				<button
-					on:click={loadPublicEvents}
+					on:click={() => goto('/')}
 					class="rounded-sm border-2 border-violet-500 px-8 py-4 font-bold duration-400 hover:scale-110 hover:bg-violet-500/10"
 				>
-					Try Again
+					Home
 				</button>
 			</div>
 		{:else if publicEvents.length === 0}
@@ -73,17 +55,17 @@
 					on:click={() => goto('/create')}
 					class="rounded-sm border-2 border-violet-500 px-8 py-4 font-bold duration-400 hover:scale-110 hover:bg-violet-500/10"
 				>
-					Create Your First Event
+					Create
 				</button>
 			</div>
 		{:else}
 			<div class="mx-auto max-w-4xl">
 				<div class="mb-6">
-					<h2 class="text-2xl font-bold text-slate-400">Public Events ({publicEvents.length})</h2>
+					<h2 class="text-2xl font-bold text-slate-300">Public Events ({publicEvents.length})</h2>
 					<p class="text-slate-500">Discover events created by the community</p>
 				</div>
 
-				<div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+				<div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
 					{#each publicEvents as event}
 						<div class="rounded-sm border border-slate-200 p-6 shadow-sm">
 							<div class="mb-4">
@@ -118,12 +100,14 @@
 										<span>{event.location}</span>
 									</div>
 									<div class="flex items-center space-x-2">
-										<span class="rounded-sm border border-slate-300 px-2 py-1 text-xs font-medium">
+										<span
+											class="rounded-sm border px-2 py-1 text-xs font-medium {event.type ===
+											'limited'
+												? 'border-amber-600 text-amber-600'
+												: 'border-teal-500 text-teal-500'}"
+										>
 											{event.type === 'limited' ? 'Limited' : 'Unlimited'}
 										</span>
-										{#if event.type === 'limited' && event.attendee_limit}
-											<span class="text-xs">• {event.attendee_limit} max</span>
-										{/if}
 									</div>
 								</div>
 							</div>

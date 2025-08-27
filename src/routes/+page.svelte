@@ -3,7 +3,7 @@
 </script>
 
 <svelte:head>
-	<title>Event Cactus - The RSVP site</title>
+	<title>Cactoide - The RSVP site</title>
 	<meta
 		name="description"
 		content="Create and manage event RSVPs. No registration required, instant sharing."
@@ -29,8 +29,9 @@
 
 			<div class="relative z-10">
 				<h1 class="bg-gradient-to-r bg-clip-text text-5xl font-bold md:text-7xl lg:text-8xl">
-					Event Cactus 🌵
+					Cactoide 🌵
 				</h1>
+
 				<p class="mt-6 text-xl md:text-2xl">The Ultimate RSVP Platform</p>
 				<p class="mt-4 text-lg md:text-xl">Create, share, and manage events with zero friction.</p>
 
@@ -71,7 +72,7 @@
 	<section class="py-20">
 		<div class="container mx-auto px-4">
 			<h2 class=" mb-16 text-center text-4xl font-bold">
-				Why <span class="text-violet-400">Event Cactus?</span>
+				Why <span class="text-violet-400">Cactoide?</span>
 			</h2>
 			<div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
 				<!-- Feature 1 -->
@@ -190,7 +191,7 @@
 			<h2 class="mb-6 text-4xl font-bold text-white">
 				Ready to Create Your <span class="text-violet-400">First Event</span>?
 			</h2>
-			<p class="mb-10 text-xl">Join thousands of event organizers who trust Event Cactus</p>
+			<p class="mb-10 text-xl">Join thousands of event organizers who trust Cactoide</p>
 			<button
 				on:click={() => goto('/create')}
 				class="rounded-sm border-2 border-violet-500 px-8 py-4 font-bold duration-400 hover:scale-110 hover:bg-violet-500/10"
