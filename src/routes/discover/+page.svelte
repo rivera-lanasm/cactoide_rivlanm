@@ -2,6 +2,7 @@
 	import type { Event } from '$lib/types';
 	import { goto } from '$app/navigation';
 	import type { PageData } from '../$types';
+	import { formatTime, formatDate } from '$lib/dateFormatter';
 
 	let publicEvents: Event[] = [];
 	let error = '';
@@ -9,19 +10,6 @@
 	export let data: PageData;
 	// Use the server-side data
 	$: publicEvents = data.events;
-
-	function formatDate(dateString: string): string {
-		const date = new Date(dateString);
-		const year = date.getFullYear();
-		const month = String(date.getMonth() + 1).padStart(2, '0');
-		const day = String(date.getDate()).padStart(2, '0');
-		return `${year}/${month}/${day}`;
-	}
-
-	function formatTime(timeString: string): string {
-		const [hours, minutes] = timeString.split(':');
-		return `${hours}:${minutes}`;
-	}
 </script>
 
 <svelte:head>

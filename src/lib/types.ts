@@ -1,5 +1,6 @@
 export type EventType = 'limited' | 'unlimited';
 export type EventVisibility = 'public' | 'private';
+export type ActionType = 'add' | 'remove';
 
 export interface Event {
 	id: string;

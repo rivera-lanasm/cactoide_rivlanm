@@ -117,15 +117,14 @@ export const actions: Actions = {
 				createdAt: new Date()
 			});
 
-			return { success: true };
+			return { success: true, type: 'add' };
 		} catch (err) {
 			console.error('Error adding RSVP:', err);
 			return fail(500, { error: 'Failed to add RSVP' });
 		}
 	},
 
-	removeRSVP: async ({ request, params }) => {
-		const eventId = params.id;
+	removeRSVP: async ({ request }) => {
 		const formData = await request.formData();
 
 		const rsvpId = formData.get('rsvpId') as string;
@@ -136,7 +135,7 @@ export const actions: Actions = {
 
 		try {
 			await drizzleQuery.delete(rsvps).where(eq(rsvps.id, rsvpId));
-			return { success: true };
+			return { success: true, type: 'remove' };
 		} catch (err) {
 			console.error('Error removing RSVP:', err);
 			return fail(500, { error: 'Failed to remove RSVP' });

@@ -3,6 +3,7 @@
 	import type { Event, RSVP } from '$lib/types';
 	import { goto } from '$app/navigation';
 	import { enhance } from '$app/forms';
+	import { formatTime, formatDate } from '$lib/dateFormatter';
 
 	export let data: { event: Event; rsvps: RSVP[]; userId: string };
 	export let form;
@@ -33,19 +34,6 @@
 	}
 
 	const eventId = $page.params.id;
-
-	function formatDate(dateString: string, timeString: string): string {
-		const date = new Date(`${dateString}T${timeString}`);
-		const year = date.getFullYear();
-		const month = String(date.getMonth() + 1).padStart(2, '0');
-		const day = String(date.getDate()).padStart(2, '0');
-		return `${year}/${month}/${day}`;
-	}
-
-	function formatTime(timeString: string): string {
-		const [hours, minutes] = timeString.split(':');
-		return `${hours}:${minutes}`;
-	}
 
 	function copyEventLink() {
 		const url = `${window.location.origin}/event/${eventId}`;
@@ -329,11 +317,19 @@
 
 <!-- Success/Error Messages -->
 {#if success}
-	<div
-		class="fixed right-4 bottom-4 z-40 w-128 rounded-sm border border-green-500/30 bg-green-900/20 p-4 text-green-400"
-	>
-		{success}
-	</div>
+	{#if form?.type === 'add'}
+		<div
+			class="fixed right-4 bottom-4 z-40 w-128 rounded-sm border border-green-500/30 bg-green-900/20 p-4 text-green-400"
+		>
+			{success}
+		</div>
+	{:else if form?.type === 'remove'}
+		<div
+			class="fixed right-4 bottom-4 z-40 w-128 rounded-sm border border-yellow-500/30 bg-yellow-900/20 p-4 text-yellow-400"
+		>
+			Removed RSVP successfully.
+		</div>
+	{/if}
 {/if}
 
 {#if error}

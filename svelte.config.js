@@ -1,4 +1,4 @@
-import adapter from '@sveltejs/adapter-netlify';
+import adapter from '@sveltejs/adapter-node';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
 /** @type {import('@sveltejs/kit').Config} */
@@ -15,7 +15,10 @@ const config = {
 			// see "split" mode in https://github.com/sveltejs/kit/tree/main/packages/adapter-netlify
 			edge: false,
 			split: false
-		})
+		}),
+		csrf: {
+			checkOrigin: false
+		}
 	}
 };
 
