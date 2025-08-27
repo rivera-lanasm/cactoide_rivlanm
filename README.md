@@ -40,7 +40,45 @@ Your app will be available at `http://localhost:5173`
 
 ### 🚀 Self-Host
 
-WIP
+#### Using GitHub Container Registry (GHCR)
+
+The application is automatically built and pushed to GitHub Container Registry on every push to main/master branch.
+
+```bash
+# Pull the latest image
+docker pull ghcr.io/${{ github.repository }}/cactoide:latest
+
+# Or use a specific tag
+docker pull ghcr.io/${{ github.repository }}/cactoide:main-abc1234
+
+# Run the container
+docker run -p 3000:3000 \
+  -e DATABASE_URL="your-database-url" \
+  ghcr.io/${{ github.repository }}/cactoide:latest
+```
+
+#### Using Docker Compose with GHCR
+
+```yaml
+# docker-compose.prod.yml
+version: '3.8'
+services:
+  app:
+    image: ghcr.io/${{ github.repository }}/cactoide:latest
+    ports:
+      - '3000:3000'
+    environment:
+      - DATABASE_URL=your-production-database-url
+      - NODE_ENV=production
+    restart: unless-stopped
+```
+
+#### Available Tags
+
+- `latest` - Latest commit on main branch
+- `main-<sha>` - Specific commit on main branch
+- `v1.0.0` - Semantic version tags
+- `1.0` - Major.minor version tags
 
 ### 📄 License
 
