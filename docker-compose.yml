@@ -6,11 +6,11 @@ services:
     image: postgres:15-alpine
     container_name: cactoide-db
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-cactoied_database}
+      POSTGRES_DB: ${POSTGRES_DB:-cactoide_database}
       POSTGRES_USER: ${POSTGRES_USER:-cactoide}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-cactoide_password}
-    ports:
-      - '${POSTGRES_PORT:-5432}:5432'
+    expose:
+      - '${POSTGRES_PORT:-5437}'
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -18,7 +18,7 @@ services:
       test:
         [
           'CMD-SHELL',
-          'pg_isready -U ${POSTGRES_USER:-cactoide} -d ${POSTGRES_DB:-cactoied_database}'
+          'pg_isready -U ${POSTGRES_USER:-cactoide} -d ${POSTGRES_DB:-cactoide_database}'
         ]
       interval: 10s
       timeout: 5s
@@ -31,9 +31,9 @@ services:
     image: ghcr.io/polaroi8d/cactoide/cactoide:${APP_VERSION:-latest}
     container_name: cactoide-app
     ports:
-      - '${PORT:-3000}:3000'
+      - '${PORT:-5111}:3000'
     environment:
-      DATABASE_URL: postgres://${POSTGRES_USER:-cactoide}:${POSTGRES_PASSWORD:-cactoide_password}@postgres:${POSTGRES_PORT:-5432}/${POSTGRES_DB:-cactoied_database}
+      DATABASE_URL: ${DATABASE_URL}
       PORT: 3000
       HOSTNAME: ${HOSTNAME:-0.0.0.0}
     depends_on:
