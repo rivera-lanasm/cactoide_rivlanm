@@ -75,9 +75,6 @@ export const actions: Actions = {
 		const name = formData.get('newAttendeeName') as string;
 		const userId = cookies.get('cactoideUserId');
 
-		console.log(`name: ${name}`);
-		console.log(`userId: ${userId}`);
-
 		if (!name?.trim() || !userId) {
 			return fail(400, { error: 'Name and user ID are required' });
 		}

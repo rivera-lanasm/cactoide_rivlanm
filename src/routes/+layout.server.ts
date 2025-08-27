@@ -9,11 +9,11 @@ export function load({ cookies }) {
 	const PATH = '/';
 
 	if (!cactoideUserId) {
-		console.log(`There is no cactoideUserId cookie, generating new one...`);
+		console.debug(`There is no cactoideUserId cookie, generating new one...`);
 		cookies.set('cactoideUserId', userId, { path: PATH, maxAge: MAX_AGE });
 	} else {
-		console.log(`cactoideUserId: ${cactoideUserId}`);
-		console.log(`cactoideUserId cookie found, using existing one...`);
+		console.debug(`cactoideUserId: ${cactoideUserId}`);
+		console.debug(`cactoideUserId cookie found, using existing one...`);
 	}
 
 	return {

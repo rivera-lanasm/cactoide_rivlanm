@@ -17,8 +17,6 @@ export const load = async ({ cookies }) => {
 			.where(eq(events.userId, userId))
 			.orderBy(desc(events.createdAt));
 
-		console.log(userEvents);
-
 		const transformedEvents = userEvents.map((event) => ({
 			id: event.id,
 			name: event.name,
