@@ -1,8 +1,6 @@
 <script lang="ts">
 	import type { CreateEventData, EventType } from '$lib/types';
-	import { goto } from '$app/navigation';
 	import { enhance } from '$app/forms';
-	import { onMount } from 'svelte';
 
 	export let form;
 

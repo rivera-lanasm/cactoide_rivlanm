@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: cactoide-db
+    environment:
+      POSTGRES_DB: cactoied_database
+      POSTGRES_USER: cactoide
+      POSTGRES_PASSWORD: cactoide_password
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U cactoide -d cactoied_database']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - cactoide-network
+
+  # SvelteKit Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cactoide-app
+    ports:
+      - '3000:3000'
+    environment:
+      DATABASE_URL: postgres://cactoide:cactoide_password@postgres:5432/cactoied_database
+      NODE_ENV: production
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - cactoide-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+
+networks:
+  cactoide-network:
+    driver: bridge

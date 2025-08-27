@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { eventsStore } from '$lib/stores/events-supabase';
 	import type { Event } from '$lib/types';
 	import { goto } from '$app/navigation';
 	import type { PageData } from '../$types';

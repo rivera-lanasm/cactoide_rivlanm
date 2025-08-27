@@ -11,8 +11,7 @@
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"format": "prettier --write .",
-		"lint": "prettier --check . && eslint .",
-		"build:netlify": "npm run build"
+		"lint": "prettier --check . && eslint ."
 	},
 	"devDependencies": {
 		"@eslint/compat": "^1.2.5",
@@ -40,7 +39,6 @@
 		"vite": "^7.0.4"
 	},
 	"dependencies": {
-		"@supabase/supabase-js": "^2.55.0",
 		"drizzle-orm": "^0.44.5",
 		"postgres": "^3.4.7"
 	}
