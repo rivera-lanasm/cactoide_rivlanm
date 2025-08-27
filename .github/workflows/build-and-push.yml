@@ -48,6 +48,8 @@ jobs:
           cache-to: type=gha,mode=max
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_LC }}:latest
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_LC }}:${{ github.sha }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_LC }}:${{ github.ref_type == 'tag' && github.ref_name || '' }}
           labels: |
             org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
 
