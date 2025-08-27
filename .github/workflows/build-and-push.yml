@@ -1,3 +1,4 @@
+# .github/workflows/docker-build-and-push.yml
 name: build & push the images
 
 on:
@@ -38,8 +39,24 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      # Generate tags & labels:
+      # - short SHA on all pushes
+      # - git tag on tag pushes
+      # - latest only on default branch (e.g., main)
+      - name: Extract Docker metadata (tags, labels)
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_LC }}
+          tags: |
+            type=sha,format=short
+            type=ref,event=tag
+            type=raw,value=latest,enable={{is_default_branch}}
+          labels: |
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+
       - name: Build and push Docker image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           file: ./Dockerfile
@@ -47,13 +64,5 @@ jobs:
           platforms: linux/amd64,linux/arm64
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          tags: |
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_LC }}:latest
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_LC }}:${{ github.sha }}
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_LC }}:${{ github.ref_type == 'tag' && github.ref_name || '' }}
-          labels: |
-            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
-
-      - name: Output image info
-        run: |
-          echo "Image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_LC }}:latest"
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
