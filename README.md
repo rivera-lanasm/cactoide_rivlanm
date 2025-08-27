@@ -2,7 +2,17 @@
 
 Events that thrive anywhere.
 
-Like the cactus, great events bloom under any condition when managed with care. Cactoide(ae) helps you streamline RSVPs, simplify coordination, and keep every detail efficient—so your gatherings are resilient, vibrant, and unforgettable.
+Like the cactus, great events bloom under any condition when managed with care. Cactoide(ae) helps you streamline RSVPs, simplify coordination, and keep every detail efficient—so your gatherings are resilient, vibrant, and unforgettabl
+e.
+
+<p align="center">
+  <a href="https://cactoide.dalev.hu/" target="blank">
+    <picture>
+      <img alt="actoide" src="https://github.com/user-attachments/assets/30b87181-1e3b-49d0-869e-bef6dcf7f777" width="840">
+    </picture>
+  </a>
+</p>
+
 
 #### What is it?
 
@@ -28,7 +38,7 @@ A mobile-first event RSVP platform that lets you create events, share unique URL
 ### 🚀 Quick Start
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/polaroi8d/cactoide/
 cd cactoide
 npm install
 cp env.example .env
@@ -40,48 +50,10 @@ Your app will be available at `http://localhost:5173`
 
 ### 🚀 Self-Host
 
-#### Using GitHub Container Registry (GHCR)
-
-The application is automatically built and pushed to GitHub Container Registry on every push to main/master branch.
-
-```bash
-# Pull the latest image
-docker pull ghcr.io/${{ github.repository }}/cactoide:latest
-
-# Or use a specific tag
-docker pull ghcr.io/${{ github.repository }}/cactoide:main-abc1234
-
-# Run the container
-docker run -p 3000:3000 \
-  -e DATABASE_URL="your-database-url" \
-  ghcr.io/${{ github.repository }}/cactoide:latest
-```
-
-#### Using Docker Compose with GHCR
-
-```yaml
-# docker-compose.prod.yml
-version: '3.8'
-services:
-  app:
-    image: ghcr.io/${{ github.repository }}/cactoide:latest
-    ports:
-      - '3000:3000'
-    environment:
-      - DATABASE_URL=your-production-database-url
-      - NODE_ENV=production
-    restart: unless-stopped
-```
-
-#### Available Tags
-
-- `latest` - Latest commit on main branch
-- `main-<sha>` - Specific commit on main branch
-- `v1.0.0` - Semantic version tags
-- `1.0` - Major.minor version tags
+WIP
 
 ### 📄 License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
 
 **Made with ❤️ by @polaroi8d**
