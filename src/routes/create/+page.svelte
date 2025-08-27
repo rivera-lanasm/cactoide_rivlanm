@@ -10,7 +10,8 @@
 		time: '',
 		location: '',
 		type: 'unlimited',
-		attendee_limit: undefined
+		attendee_limit: undefined,
+		visibility: 'public'
 	};
 
 	let errors: Record<string, string> = {};
@@ -226,6 +227,40 @@
 							{/if}
 						</div>
 					{/if}
+
+					<!-- Event Visibility -->
+					<div>
+						<label class="text-dark-800 mb-3 block text-sm font-semibold">
+							Visibility <span class="text-red-400">*</span></label
+						>
+						<div class="grid grid-cols-2 gap-3">
+							<button
+								type="button"
+								class="rounded-sm border-2 px-4 py-3 font-medium transition-all duration-200 {eventData.visibility ===
+								'public'
+									? ' border-violet-500 bg-violet-400/20 font-semibold hover:bg-violet-400/70'
+									: 'border-dark-300 text-dark-700'}"
+								on:click={() => (eventData.visibility = 'public')}
+							>
+								🌍 Public
+							</button>
+							<button
+								type="button"
+								class="rounded-sm border-2 px-4 py-3 font-medium transition-all duration-200 {eventData.visibility ===
+								'private'
+									? ' border-violet-500 bg-violet-400/20 font-semibold hover:bg-violet-400/70'
+									: 'border-dark-300 text-dark-700 bg-gray-600/20 hover:bg-gray-600/70'}"
+								on:click={() => (eventData.visibility = 'private')}
+							>
+								🔒 Private
+							</button>
+						</div>
+						<p class="mt-2 text-xs text-slate-400">
+							{eventData.visibility === 'public'
+								? 'Public events are visible to everyone and can be discovered by others'
+								: 'Private events are only visible to you and people you share the link with'}
+						</p>
+					</div>
 
 					<!-- Submit Button -->
 					<button

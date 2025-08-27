@@ -124,14 +124,17 @@
 		{:else}
 			<div class="mx-auto max-w-4xl">
 				<div class="mb-6">
-					<h2 class="text-2xl font-bold text-slate-400">Your Events ({userEvents.length})</h2>
+					<h2 class="text-2xl font-bold text-slate-400">My Events ({userEvents.length})</h2>
+					<p class="text-slate-500">Manage your created events</p>
 				</div>
 
 				<div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
 					{#each userEvents as event}
 						<div class="rounded-sm border border-slate-200 p-6 shadow-sm">
 							<div class="mb-4">
-								<h3 class="mb-2 text-xl font-bold text-slate-300">{event.name}</h3>
+								<div class="mb-3 flex items-center justify-between">
+									<h3 class="text-xl font-bold text-slate-300">{event.name}</h3>
+								</div>
 								<div class="space-y-2 text-sm text-slate-500">
 									<div class="flex items-center space-x-2">
 										<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -165,10 +168,16 @@
 										<span class="rounded-sm border border-slate-300 px-2 py-1 text-xs font-medium">
 											{event.type === 'limited' ? 'Limited' : 'Unlimited'}
 										</span>
-										{#if event.type === 'limited' && event.attendee_limit}
-											<span class="text-xs">• {event.attendee_limit} max</span>
-										{/if}
+										<span
+											class="rounded-sm border px-2 py-1 text-xs font-medium {event.visibility ===
+											'public'
+												? 'border-green-300 text-green-400'
+												: 'border-orange-300 text-orange-400'}"
+										>
+											{event.visibility === 'public' ? 'Public' : 'Private'}
+										</span>
 									</div>
+									<div class="flex items-center space-x-2"></div>
 								</div>
 							</div>
 

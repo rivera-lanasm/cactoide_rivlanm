@@ -28,6 +28,7 @@ function convertDatabaseEvent(dbEvent: DatabaseEvent): Event {
 		location: dbEvent.location,
 		type: dbEvent.type,
 		attendee_limit: dbEvent.attendee_limit,
+		visibility: dbEvent.visibility,
 		user_id: dbEvent.user_id,
 		created_at: dbEvent.created_at,
 		updated_at: dbEvent.updated_at
@@ -63,6 +64,7 @@ export const eventsStore = {
 				location: eventData.location,
 				type: eventData.type,
 				attendee_limit: eventData.attendee_limit,
+				visibility: eventData.visibility,
 				user_id: userId,
 				created_at: now,
 				updated_at: now
@@ -275,6 +277,35 @@ export const eventsStore = {
 			return userEvents;
 		} catch (error) {
 			console.error('Error fetching user events:', error);
+			return [];
+		}
+	},
+
+	// Get public events
+	getPublicEvents: async (): Promise<Event[]> => {
+		try {
+			const { data, error } = await supabase
+				.from('events')
+				.select('*')
+				.eq('visibility', 'public')
+				.order('created_at', { ascending: false });
+
+			if (error) throw error;
+
+			const publicEvents = data?.map(convertDatabaseEvent) || [];
+
+			// Update local store
+			publicEvents.forEach((event) => {
+				events.update((currentEvents) => {
+					const newMap = new Map(currentEvents);
+					newMap.set(event.id, event);
+					return newMap;
+				});
+			});
+
+			return publicEvents;
+		} catch (error) {
+			console.error('Error fetching public events:', error);
 			return [];
 		}
 	},

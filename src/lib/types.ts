@@ -1,4 +1,5 @@
 export type EventType = 'limited' | 'unlimited';
+export type EventVisibility = 'public' | 'private';
 
 export interface Event {
 	id: string;
@@ -8,6 +9,7 @@ export interface Event {
 	location: string;
 	type: EventType;
 	attendee_limit?: number;
+	visibility: EventVisibility;
 	user_id: string;
 	created_at: string;
 	updated_at: string;
@@ -28,6 +30,7 @@ export interface CreateEventData {
 	location: string;
 	type: EventType;
 	attendee_limit?: number;
+	visibility: EventVisibility;
 }
 
 export interface DatabaseEvent {
@@ -38,6 +41,7 @@ export interface DatabaseEvent {
 	location: string;
 	type: EventType;
 	attendee_limit?: number;
+	visibility: EventVisibility;
 	user_id: string;
 	created_at: string;
 	updated_at: string;

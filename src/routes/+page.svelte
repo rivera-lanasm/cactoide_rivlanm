@@ -29,7 +29,7 @@
 
 			<div class="relative z-10">
 				<h1 class="bg-gradient-to-r bg-clip-text text-5xl font-bold md:text-7xl lg:text-8xl">
-					Event Cactus
+					Event Cactus 🌵
 				</h1>
 				<p class="mt-6 text-xl md:text-2xl">The Ultimate RSVP Platform</p>
 				<p class="mt-4 text-lg md:text-xl">Create, share, and manage events with zero friction.</p>
@@ -48,11 +48,31 @@
 		</div>
 	</section>
 
+	<!-- Public Events Section -->
+	<section class="py-8">
+		<div class="container mx-auto px-4">
+			<div class="mb-16 text-center">
+				<h2 class="text-4xl font-bold text-white">Discover Public Events</h2>
+				<p class="mt-4 text-xl text-slate-300">See what others are planning and get inspired</p>
+			</div>
+
+			<div class="text-center">
+				<button
+					on:click={() => goto('/discover')}
+					class="rounded-sm border-2 border-violet-500 px-8 py-4 font-bold duration-400 hover:scale-110 hover:bg-violet-500/10"
+				>
+					Browse All Public Events
+				</button>
+			</div>
+		</div>
+	</section>
+
 	<!-- Features Section -->
 	<section class="py-20">
 		<div class="container mx-auto px-4">
-			<h2 class=" mb-16 text-center text-4xl font-bold">Why Event Cactus?</h2>
-
+			<h2 class=" mb-16 text-center text-4xl font-bold">
+				Why <span class="text-violet-400">Event Cactus?</span>
+			</h2>
 			<div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
 				<!-- Feature 1 -->
 				<div class="rounded-sm border p-8 text-center">

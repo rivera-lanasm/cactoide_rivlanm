@@ -177,11 +177,19 @@
 							</div>
 						</div>
 
-						<!-- Event Type & Capacity -->
+						<!-- Event Type, Visibility & Capacity -->
 						<div class="flex items-center justify-between rounded-sm p-3">
 							<div class="flex items-center space-x-2">
 								<span class="rounded-full border px-2 py-1 text-xs font-semibold text-violet-400">
 									{event.type === 'limited' ? 'Limited' : 'Unlimited'}
+								</span>
+								<span
+									class="rounded-full border px-2 py-1 text-xs font-semibold {event.visibility ===
+									'public'
+										? 'border-green-300 text-green-400'
+										: 'border-orange-300 text-orange-400'}"
+								>
+									{event.visibility === 'public' ? '🌍 Public' : '🔒 Private'}
 								</span>
 							</div>
 

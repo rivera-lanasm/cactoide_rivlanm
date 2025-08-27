@@ -14,7 +14,7 @@
 
 <nav class="relative z-50 backdrop-blur-md">
 	<div class="container mx-auto px-4">
-		<div class="flex h-16 items-center justify-between">
+		<div class="mt-4 flex h-16 flex-col items-center justify-between">
 			<!-- Logo/Brand -->
 			<div class="flex items-center">
 				<button
@@ -35,6 +35,13 @@
 				</button>
 
 				<button
+					on:click={() => navigateTo('/discover')}
+					class={isActive('/discover') ? 'text-violet-400' : 'cursor-pointer'}
+				>
+					Discover
+				</button>
+
+				<button
 					on:click={() => navigateTo('/create')}
 					class={isActive('/create') ? 'text-violet-400' : 'cursor-pointer'}
 				>
@@ -45,7 +52,7 @@
 					on:click={() => navigateTo('/event')}
 					class={isActive('/event') ? 'text-violet-400' : 'cursor-pointer'}
 				>
-					List
+					My Events
 				</button>
 			</div>
 		</div>
