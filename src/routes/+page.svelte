@@ -13,18 +13,26 @@
 <div class="flex min-h-screen flex-col">
 	<section class="mx-auto w-full pt-20 pb-20 md:w-3/4">
 		<div class="container mx-auto px-4 text-center">
-			<h1 class="text-5xl font-bold md:text-7xl lg:text-8xl">Cactoide(ea) 🌵</h1>
+			<h1 class="text-5xl font-bold md:text-7xl lg:text-8xl">
+				Cactoide(ea)<span class="text-violet-400"
+					><a href="https://en.wikipedia.org/wiki/Cactoideae" target="_blank">*</a></span
+				> 🌵
+			</h1>
 
 			<h2 class="mt-6 text-xl md:text-2xl">The Ultimate RSVP Platform</h2>
 			<p class="mt-4 text-lg italic md:text-xl">
 				Create, share, and manage events with zero friction.
 			</p>
 
-			<h2 class="mt-6 pt-8 text-xl md:text-2xl">Why Cactoide(ae)?🌵</h2>
+			<h2 class="mt-6 pt-8 text-xl md:text-2xl">
+				Why Cactoide(ae)<span class="text-violet-400"
+					><a href="https://en.wikipedia.org/wiki/Cactoideae" target="_blank">*</a></span
+				>?🌵
+			</h2>
 			<p class="mt-4 text-lg md:text-xl">
 				Like the cactus, great events bloom under any condition when managed with care. Cactoide(ae)
 				helps you streamline RSVPs, simplify coordination, and keep every detail efficient—so your
-				gatherings are resilient, vibrant, and unforgettabl e.
+				gatherings are resilient, vibrant, and unforgettable.
 			</p>
 
 			<button
