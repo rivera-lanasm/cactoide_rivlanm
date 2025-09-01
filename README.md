@@ -27,10 +27,24 @@ A mobile-first event RSVP platform that lets you create events, share unique URL
 
 ### Quick Start
 
+#### Requirements
+
+`git, docker, docker-compose, node at least suggested 20.19.0`
+
+Uses the [`docker-compose.yml`](docker-compose.yml) file to setup the application with the database. You can define all ENV variables in the [`.env`](.env.example) file from the `.env.example`.
+
 ```bash
 git clone https://github.com/polaroi8d/cactoide/
 cd cactoide
-npm install
+cp env.example .env
+docker compose up -d
+```
+
+### Development
+
+```bash
+git clone https://github.com/polaroi8d/cactoide/
+cd cactoide
 cp env.example .env
 make db-only
 npm run dev -- --open
@@ -38,9 +52,7 @@ npm run dev -- --open
 
 Your app will be available at `http://localhost:5173`. You can use the Makefile commands to run the application or the database, eg.: `make db-only`.
 
-### Self-Host
-
-Use the [`docker-compose.yml`](docker-compose.yml) file to setup the application with the database. You can define all ENV variables in the [`.env`](.env.example) file from the `.env.example`.
+Use the `database/seed.sql` if you want to populate your database with dummy data.
 
 ### License
 

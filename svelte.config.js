@@ -8,7 +8,6 @@ const config = {
 	preprocess: vitePreprocess(),
 
 	kit: {
-		// Using Netlify adapter for deployment
 		adapter: adapter({
 			// if you want to use 'split' mode, set this to 'split'
 			// and create a _redirects file with the redirects you want
