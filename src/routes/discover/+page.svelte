@@ -2,7 +2,7 @@
 	import type { Event, EventType } from '$lib/types';
 	import { goto } from '$app/navigation';
 	import type { PageData } from '../$types';
-	import { formatTime, formatDate } from '$lib/dateFormatter';
+	import { formatTime, formatDate, isEventInTimeRange } from '$lib/dateHelpers';
 	import Fuse from 'fuse.js';
 
 	let publicEvents: Event[] = [];
@@ -10,7 +10,9 @@
 	let searchQuery = '';
 	let selectedEventType: EventType | 'all' = 'all';
 	let selectedTimeFilter: 'any' | 'next-week' | 'next-month' = 'any';
+	let selectedTemporalStatus: 'all' | 'upcoming' | 'past' = 'all';
 	let selectedSortOrder: 'asc' | 'desc' = 'asc';
+	let showFilters = false;
 	let fuse: Fuse<Event>;
 
 	export let data: PageData;
@@ -28,35 +30,18 @@
 		includeMatches: true
 	});
 
-	// Helper function to check if an event is within a time range
-	function isEventInTimeRange(event: Event, timeFilter: string): boolean {
-		if (timeFilter === 'any') return true;
-
-		const eventDate = new Date(`${event.date}T${event.time}`);
-		const now = new Date();
-
-		if (timeFilter === 'next-week') {
-			const nextWeek = new Date(now);
-			nextWeek.setDate(now.getDate() + 7);
-			return eventDate >= now && eventDate <= nextWeek;
-		}
-
-		if (timeFilter === 'next-month') {
-			const nextMonth = new Date(now);
-			nextMonth.setMonth(now.getMonth() + 1);
-			return eventDate >= now && eventDate <= nextMonth;
-		}
-
-		return true;
-	}
-
-	// Filter events based on search query, event type, and time filter using Fuse.js
+	// Filter events based on search query, event type, time filter, and temporal status
 	$: filteredEvents = (() => {
 		let events = publicEvents;
 
 		// First filter by event type
 		if (selectedEventType !== 'all') {
 			events = events.filter((event) => event.type === selectedEventType);
+		}
+
+		// Then filter by temporal status (past/upcoming/all)
+		if (selectedTemporalStatus !== 'all') {
+			events = events.filter((event) => isEventInTimeRange(event, selectedTemporalStatus));
 		}
 
 		// Then filter by time range
@@ -67,9 +52,12 @@
 		// Then apply search query
 		if (searchQuery.trim() !== '') {
 			events = fuse.search(searchQuery).map((result) => result.item);
-			// Re-apply type and time filters after search
+			// Re-apply all filters after search
 			if (selectedEventType !== 'all') {
 				events = events.filter((event) => event.type === selectedEventType);
+			}
+			if (selectedTemporalStatus !== 'all') {
+				events = events.filter((event) => isEventInTimeRange(event, selectedTemporalStatus));
 			}
 			if (selectedTimeFilter !== 'any') {
 				events = events.filter((event) => isEventInTimeRange(event, selectedTimeFilter));
@@ -134,90 +122,130 @@
 
 				<!-- Search and Filter Section -->
 				<div class="mb-8 max-h-screen">
-					<!-- Search Bar -->
-					<div class="relative mx-auto w-full md:w-2/3">
-						<div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-							<svg
-								class="h-5 w-5 text-slate-400"
-								fill="none"
-								stroke="currentColor"
-								viewBox="0 0 24 24"
-							>
-								<path
-									stroke-linecap="round"
-									stroke-linejoin="round"
-									stroke-width="2"
-									d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-								></path>
-							</svg>
-						</div>
-						<input
-							type="text"
-							bind:value={searchQuery}
-							placeholder="Search events by name, location..."
-							class="w-full rounded-lg border border-slate-600 bg-slate-800 px-4 py-3 pl-10 text-white placeholder-slate-400 focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 focus:outline-none"
-						/>
-						{#if searchQuery}
-							<button
-								on:click={() => (searchQuery = '')}
-								class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-300"
-								aria-label="Search input"
-							>
-								<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<!-- Search Bar and Filter Toggle -->
+					<div class="mx-auto flex w-full items-center gap-3 md:w-2/3">
+						<div class="relative flex-1">
+							<div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+								<svg
+									class="h-5 w-5 text-slate-400"
+									fill="none"
+									stroke="currentColor"
+									viewBox="0 0 24 24"
+								>
 									<path
 										stroke-linecap="round"
 										stroke-linejoin="round"
 										stroke-width="2"
-										d="M6 18L18 6M6 6l12 12"
+										d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
 									></path>
 								</svg>
-							</button>
-						{/if}
+							</div>
+							<input
+								type="text"
+								bind:value={searchQuery}
+								placeholder="Search events by name, location..."
+								class="w-full rounded-sm border border-slate-600 bg-slate-800 pl-10 text-white placeholder-slate-400 focus:border-violet-500 focus:ring-violet-500/20"
+							/>
+							{#if searchQuery}
+								<button
+									on:click={() => (searchQuery = '')}
+									class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-300"
+									aria-label="Search input"
+								>
+									<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path
+											stroke-linecap="round"
+											stroke-linejoin="round"
+											stroke-width="2"
+											d="M6 18L18 6M6 6l12 12"
+										></path>
+									</svg>
+								</button>
+							{/if}
+						</div>
+
+						<!-- Filter Toggle Button -->
+						<button
+							on:click={() => (showFilters = !showFilters)}
+							class="flex items-center rounded-sm border p-3 font-semibold {showFilters
+								? 'border-violet-500 bg-violet-400/20'
+								: 'border-slate-600 bg-slate-800'}"
+							aria-label="Toggle filters"
+						>
+							<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									stroke-width="2"
+									d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.207A1 1 0 013 6.5V4z"
+								></path>
+							</svg>
+						</button>
 					</div>
 
 					<!-- Time Filter and Sort Controls -->
-					<div class="mx-auto mt-4 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-						<!-- Event Type Filter -->
-						<div class="flex items-center gap-2">
-							<label for="event-type-filter" class="text-sm font-medium text-slate-400">Type:</label
-							>
-							<select
-								id="event-type-filter"
-								bind:value={selectedEventType}
-								class="rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-white focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 focus:outline-none"
-							>
-								<option value="all">All</option>
-								<option value="limited">Limited</option>
-								<option value="unlimited">Unlimited</option>
-							</select>
-						</div>
-						<!-- Time Filter Dropdown -->
-						<div class="flex items-center gap-2">
-							<label for="time-filter" class="text-sm font-medium text-slate-400">Time:</label>
-							<select
-								id="time-filter"
-								bind:value={selectedTimeFilter}
-								class="rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-white focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 focus:outline-none"
-							>
-								<option value="any">Any time</option>
-								<option value="next-week">Next week</option>
-								<option value="next-month">Next month</option>
-							</select>
-						</div>
+					{#if showFilters}
+						<div
+							class="mx-auto mt-4 flex flex-col items-center gap-4 sm:flex-row sm:justify-center"
+						>
+							<!-- Event Type Filter -->
+							<div class="flex items-center gap-2">
+								<label for="event-type-filter" class="text-sm font-medium text-slate-400"
+									>Type:</label
+								>
+								<select
+									id="event-type-filter"
+									bind:value={selectedEventType}
+									class="rounded-sm border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-white focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20"
+								>
+									<option value="all">All</option>
+									<option value="limited">Limited</option>
+									<option value="unlimited">Unlimited</option>
+								</select>
+							</div>
+							<!-- Temporal Status Filter -->
+							<div class="flex items-center gap-2">
+								<label for="temporal-status-filter" class="text-sm font-medium text-slate-400"
+									>Status:</label
+								>
+								<select
+									id="temporal-status-filter"
+									bind:value={selectedTemporalStatus}
+									class="rounded-sm border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-white focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20"
+								>
+									<option value="all">All events</option>
+									<option value="upcoming">Upcoming events</option>
+									<option value="past">Past events</option>
+								</select>
+							</div>
+							<!-- Time Filter Dropdown -->
+							<div class="flex items-center gap-2">
+								<label for="time-filter" class="text-sm font-medium text-slate-400">Time:</label>
+								<select
+									id="time-filter"
+									bind:value={selectedTimeFilter}
+									class="rounded-sm border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-white focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20"
+								>
+									<option value="any">Any time</option>
+									<option value="next-week">Next week</option>
+									<option value="next-month">Next month</option>
+								</select>
+							</div>
 
-						<!-- Sort Order Dropdown -->
-						<div class="flex items-center gap-2">
-							<label for="sort-order" class="text-sm font-medium text-slate-400">Sort:</label>
-							<select
-								id="sort-order"
-								bind:value={selectedSortOrder}
-								class="rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-white focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 focus:outline-none"
-							>
-								<option value="asc">Earliest first</option>
-								<option value="desc">Latest first</option>
-							</select>
+							<!-- Sort Order Dropdown -->
+							<div class="flex items-center gap-2">
+								<label for="sort-order" class="text-sm font-medium text-slate-400">Sort:</label>
+								<select
+									id="sort-order"
+									bind:value={selectedSortOrder}
+									class="rounded-sm border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-white focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20"
+								>
+									<option value="asc">Earliest first</option>
+									<option value="desc">Latest first</option>
+								</select>
+							</div>
 						</div>
-					</div>
+					{/if}
 				</div>
 
 				<div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
