@@ -60,7 +60,7 @@
 </script>
 
 <svelte:head>
-	<title>My Events - Event Cactus</title>
+	<title>My Events - Cactoide</title>
 </svelte:head>
 
 <div class="flex min-h-screen flex-col">
