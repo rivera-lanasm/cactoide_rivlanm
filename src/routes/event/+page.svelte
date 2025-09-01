@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Event } from '$lib/types';
 	import { goto } from '$app/navigation';
-	import { formatTime, formatDate } from '$lib/dateFormatter';
+	import { formatTime, formatDate } from '$lib/dateHelpers';
 
 	export let data: { events: Event[] };
 

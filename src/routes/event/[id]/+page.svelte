@@ -3,7 +3,7 @@
 	import type { Event, RSVP } from '$lib/types';
 	import { goto } from '$app/navigation';
 	import { enhance } from '$app/forms';
-	import { formatTime, formatDate } from '$lib/dateFormatter';
+	import { formatTime, formatDate } from '$lib/dateHelpers.js';
 
 	export let data: { event: Event; rsvps: RSVP[]; userId: string };
 	export let form;
