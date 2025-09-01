@@ -9,6 +9,8 @@
 	let error = '';
 	let searchQuery = '';
 	let selectedEventType: EventType | 'all' = 'all';
+	let selectedTimeFilter: 'any' | 'next-week' | 'next-month' = 'any';
+	let selectedSortOrder: 'asc' | 'desc' = 'asc';
 	let fuse: Fuse<Event>;
 
 	export let data: PageData;
@@ -26,7 +28,29 @@
 		includeMatches: true
 	});
 
-	// Filter events based on search query and event type using Fuse.js
+	// Helper function to check if an event is within a time range
+	function isEventInTimeRange(event: Event, timeFilter: string): boolean {
+		if (timeFilter === 'any') return true;
+
+		const eventDate = new Date(`${event.date}T${event.time}`);
+		const now = new Date();
+
+		if (timeFilter === 'next-week') {
+			const nextWeek = new Date(now);
+			nextWeek.setDate(now.getDate() + 7);
+			return eventDate >= now && eventDate <= nextWeek;
+		}
+
+		if (timeFilter === 'next-month') {
+			const nextMonth = new Date(now);
+			nextMonth.setMonth(now.getMonth() + 1);
+			return eventDate >= now && eventDate <= nextMonth;
+		}
+
+		return true;
+	}
+
+	// Filter events based on search query, event type, and time filter using Fuse.js
 	$: filteredEvents = (() => {
 		let events = publicEvents;
 
@@ -35,14 +59,34 @@
 			events = events.filter((event) => event.type === selectedEventType);
 		}
 
+		// Then filter by time range
+		if (selectedTimeFilter !== 'any') {
+			events = events.filter((event) => isEventInTimeRange(event, selectedTimeFilter));
+		}
+
 		// Then apply search query
 		if (searchQuery.trim() !== '') {
 			events = fuse.search(searchQuery).map((result) => result.item);
-			// Re-apply type filter after search
+			// Re-apply type and time filters after search
 			if (selectedEventType !== 'all') {
 				events = events.filter((event) => event.type === selectedEventType);
 			}
+			if (selectedTimeFilter !== 'any') {
+				events = events.filter((event) => isEventInTimeRange(event, selectedTimeFilter));
+			}
 		}
+
+		// Sort events by date and time
+		events = events.sort((a, b) => {
+			const dateA = new Date(`${a.date}T${a.time}`);
+			const dateB = new Date(`${b.date}T${b.time}`);
+
+			if (selectedSortOrder === 'asc') {
+				return dateA.getTime() - dateB.getTime();
+			} else {
+				return dateB.getTime() - dateA.getTime();
+			}
+		});
 
 		return events;
 	})();
@@ -89,77 +133,89 @@
 				</div>
 
 				<!-- Search and Filter Section -->
-				<div class="mb-8">
-					<div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-center">
-						<!-- Search Bar -->
-						<div class="relative mx-auto max-w-md sm:mx-0">
-							<div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-								<svg
-									class="h-5 w-5 text-slate-400"
-									fill="none"
-									stroke="currentColor"
-									viewBox="0 0 24 24"
-								>
+				<div class="mb-8 max-h-screen">
+					<!-- Search Bar -->
+					<div class="relative mx-auto w-full md:w-2/3">
+						<div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+							<svg
+								class="h-5 w-5 text-slate-400"
+								fill="none"
+								stroke="currentColor"
+								viewBox="0 0 24 24"
+							>
+								<path
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									stroke-width="2"
+									d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+								></path>
+							</svg>
+						</div>
+						<input
+							type="text"
+							bind:value={searchQuery}
+							placeholder="Search events by name, location..."
+							class="w-full rounded-lg border border-slate-600 bg-slate-800 px-4 py-3 pl-10 text-white placeholder-slate-400 focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 focus:outline-none"
+						/>
+						{#if searchQuery}
+							<button
+								on:click={() => (searchQuery = '')}
+								class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-300"
+								aria-label="Search input"
+							>
+								<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 									<path
 										stroke-linecap="round"
 										stroke-linejoin="round"
 										stroke-width="2"
-										d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+										d="M6 18L18 6M6 6l12 12"
 									></path>
 								</svg>
-							</div>
-							<input
-								type="text"
-								bind:value={searchQuery}
-								placeholder="Search events by name, location..."
-								class="w-full rounded-lg border border-slate-600 bg-slate-800 px-4 py-3 pl-10 text-white placeholder-slate-400 focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 focus:outline-none"
-							/>
-							{#if searchQuery}
-								<button
-									on:click={() => (searchQuery = '')}
-									class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-300"
-								>
-									<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-										<path
-											stroke-linecap="round"
-											stroke-linejoin="round"
-											stroke-width="2"
-											d="M6 18L18 6M6 6l12 12"
-										></path>
-									</svg>
-								</button>
-							{/if}
+							</button>
+						{/if}
+					</div>
+
+					<!-- Time Filter and Sort Controls -->
+					<div class="mx-auto mt-4 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
+						<!-- Event Type Filter -->
+						<div class="flex items-center gap-2">
+							<label for="event-type-filter" class="text-sm font-medium text-slate-400">Type:</label
+							>
+							<select
+								id="event-type-filter"
+								bind:value={selectedEventType}
+								class="rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-white focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 focus:outline-none"
+							>
+								<option value="all">All</option>
+								<option value="limited">Limited</option>
+								<option value="unlimited">Unlimited</option>
+							</select>
+						</div>
+						<!-- Time Filter Dropdown -->
+						<div class="flex items-center gap-2">
+							<label for="time-filter" class="text-sm font-medium text-slate-400">Time:</label>
+							<select
+								id="time-filter"
+								bind:value={selectedTimeFilter}
+								class="rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-white focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 focus:outline-none"
+							>
+								<option value="any">Any time</option>
+								<option value="next-week">Next week</option>
+								<option value="next-month">Next month</option>
+							</select>
 						</div>
 
-						<!-- Event Type Filter -->
-						<div class="flex items-center justify-center gap-2">
-							<button
-								on:click={() => (selectedEventType = 'all')}
-								class="rounded-sm border px-3 py-2 text-sm font-medium transition-colors {selectedEventType ===
-								'all'
-									? 'border-violet-500 bg-violet-500/20 text-violet-400'
-									: 'border-slate-600 text-slate-400 hover:border-slate-500 hover:text-slate-300'}"
+						<!-- Sort Order Dropdown -->
+						<div class="flex items-center gap-2">
+							<label for="sort-order" class="text-sm font-medium text-slate-400">Sort:</label>
+							<select
+								id="sort-order"
+								bind:value={selectedSortOrder}
+								class="rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-white focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 focus:outline-none"
 							>
-								All
-							</button>
-							<button
-								on:click={() => (selectedEventType = 'limited')}
-								class="rounded-sm border px-3 py-2 text-sm font-medium transition-colors {selectedEventType ===
-								'limited'
-									? 'border-amber-600 bg-amber-600/20 text-amber-600'
-									: 'border-slate-600 text-slate-400 hover:border-slate-500 hover:text-slate-300'}"
-							>
-								Limited
-							</button>
-							<button
-								on:click={() => (selectedEventType = 'unlimited')}
-								class="rounded-sm border px-3 py-2 text-sm font-medium transition-colors {selectedEventType ===
-								'unlimited'
-									? 'border-teal-500 bg-teal-500/20 text-teal-500'
-									: 'border-slate-600 text-slate-400 hover:border-slate-500 hover:text-slate-300'}"
-							>
-								Unlimited
-							</button>
+								<option value="asc">Earliest first</option>
+								<option value="desc">Latest first</option>
+							</select>
 						</div>
 					</div>
 				</div>
