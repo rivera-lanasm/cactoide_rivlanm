@@ -4,9 +4,7 @@ export default {
 	theme: {
 		extend: {
 			fontFamily: {
-				mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
-				display: ['Inter', 'system-ui', 'sans-serif'],
-				sans: ['Inter', 'system-ui', 'sans-serif']
+				mono: ['JetBrains Mono', 'Fira Code', 'monospace']
 			}
 		}
 	}
