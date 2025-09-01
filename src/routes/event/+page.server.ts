@@ -1,4 +1,4 @@
-import { drizzleQuery } from '$lib/database/db';
+import { database } from '$lib/database/db';
 import { events } from '$lib/database/schema';
 import { fail } from '@sveltejs/kit';
 import { eq, desc } from 'drizzle-orm';
@@ -11,7 +11,7 @@ export const load = async ({ cookies }) => {
 	}
 
 	try {
-		const userEvents = await drizzleQuery
+		const userEvents = await database
 			.select()
 			.from(events)
 			.where(eq(events.userId, userId))
@@ -50,7 +50,7 @@ export const actions: Actions = {
 
 		try {
 			// First verify the user owns this event
-			const [eventData] = await drizzleQuery.select().from(events).where(eq(events.id, eventId));
+			const [eventData] = await database.select().from(events).where(eq(events.id, eventId));
 
 			if (!eventData) {
 				return fail(404, { error: 'Event not found' });
@@ -61,7 +61,7 @@ export const actions: Actions = {
 			}
 
 			// Delete the event (RSVPs will be deleted automatically due to CASCADE)
-			await drizzleQuery.delete(events).where(eq(events.id, eventId));
+			await database.delete(events).where(eq(events.id, eventId));
 
 			return { success: true };
 		} catch (error) {

@@ -1,4 +1,4 @@
-import { drizzleQuery } from '$lib/database/db';
+import { database } from '$lib/database/db';
 import { events, rsvps } from '$lib/database/schema';
 import { eq, asc } from 'drizzle-orm';
 import { error, fail } from '@sveltejs/kit';
@@ -14,12 +14,8 @@ export const load: PageServerLoad = async ({ params, cookies }) => {
 	try {
 		// Fetch event and RSVPs in parallel
 		const [eventData, rsvpData] = await Promise.all([
-			drizzleQuery.select().from(events).where(eq(events.id, eventId)).limit(1),
-			drizzleQuery
-				.select()
-				.from(rsvps)
-				.where(eq(rsvps.eventId, eventId))
-				.orderBy(asc(rsvps.createdAt))
+			database.select().from(events).where(eq(events.id, eventId)).limit(1),
+			database.select().from(rsvps).where(eq(rsvps.eventId, eventId)).orderBy(asc(rsvps.createdAt))
 		]);
 
 		if (!eventData[0]) {
@@ -81,33 +77,27 @@ export const actions: Actions = {
 
 		try {
 			// Check if event exists and get its details
-			const [eventData] = await drizzleQuery.select().from(events).where(eq(events.id, eventId));
+			const [eventData] = await database.select().from(events).where(eq(events.id, eventId));
 			if (!eventData) {
 				return fail(404, { error: 'Event not found' });
 			}
 
 			// Check if event is full (for limited type events)
 			if (eventData.type === 'limited' && eventData.attendeeLimit) {
-				const currentRSVPs = await drizzleQuery
-					.select()
-					.from(rsvps)
-					.where(eq(rsvps.eventId, eventId));
+				const currentRSVPs = await database.select().from(rsvps).where(eq(rsvps.eventId, eventId));
 				if (currentRSVPs.length >= eventData.attendeeLimit) {
 					return fail(400, { error: 'Event is full' });
 				}
 			}
 
 			// Check if name is already in the list
-			const existingRSVPs = await drizzleQuery
-				.select()
-				.from(rsvps)
-				.where(eq(rsvps.eventId, eventId));
+			const existingRSVPs = await database.select().from(rsvps).where(eq(rsvps.eventId, eventId));
 			if (existingRSVPs.some((rsvp) => rsvp.name.toLowerCase() === name.toLowerCase())) {
 				return fail(400, { error: 'Name already exists for this event' });
 			}
 
 			// Add RSVP to database
-			await drizzleQuery.insert(rsvps).values({
+			await database.insert(rsvps).values({
 				eventId: eventId,
 				name: name.trim(),
 				userId: userId,
@@ -131,7 +121,7 @@ export const actions: Actions = {
 		}
 
 		try {
-			await drizzleQuery.delete(rsvps).where(eq(rsvps.id, rsvpId));
+			await database.delete(rsvps).where(eq(rsvps.id, rsvpId));
 			return { success: true, type: 'remove' };
 		} catch (err) {
 			console.error('Error removing RSVP:', err);

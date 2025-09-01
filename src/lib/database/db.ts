@@ -3,6 +3,13 @@ import { env } from '$env/dynamic/private';
 import * as schema from './schema';
 import postgres from 'postgres';
 
-const client = postgres(env.DATABASE_URL, {});
+// Database connection configuration
+const connectionConfig = {
+	max: 10, // Maximum number of connections
+	idle_timeout: 20, // Close idle connections after 20 seconds
+	connect_timeout: 10 // Connection timeout in seconds
+};
 
-export const drizzleQuery = drizzle(client, { schema });
+const client = postgres(env.DATABASE_URL, connectionConfig);
+
+export const database = drizzle(client, { schema });

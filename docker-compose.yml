@@ -8,7 +8,9 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-cactoide}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-cactoide_password}
     expose:
-      - '${POSTGRES_PORT:-5437}'
+      - '${POSTGRES_PORT:-5432}'
+    ports:
+      - '${POSTGRES_PORT:-5432}:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql

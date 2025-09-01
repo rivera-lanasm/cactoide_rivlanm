@@ -1,4 +1,4 @@
-.PHONY: help build up db-only logs clean
+.PHONY: help build up db-only logs db-clean prune
 
 # Default target
 help:
@@ -13,7 +13,8 @@ help:
 	@echo ""
 	@echo "Utility commands:"
 	@echo "  make logs     - Show logs from all services"
-	@echo "  make clean    - Remove all containers, images, and volumes"
+	@echo "  make db-clean  - Stop & remove database container"
+	@echo "  make prune    - Remove all containers, images, and volumes"
 	@echo "  make help     - Show this help message"
 
 # Build the Docker images
@@ -36,8 +37,12 @@ logs:
 	@echo "Showing logs from all services..."
 	docker compose logs -f
 
+db-clean:
+	@echo "Cleaning up all Docker resources..."
+	docker stop cactoide-db && docker rm cactoide-db && docker volume prune -f && docker network prune -f
+
 # Clean up everything (containers, images, volumes)
-clean:
+prune:
 	@echo "Cleaning up all Docker resources..."
 	docker compose down -v --rmi all
 

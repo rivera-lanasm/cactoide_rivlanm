@@ -1,4 +1,4 @@
-import { drizzleQuery } from '$lib/database/db';
+import { database } from '$lib/database/db';
 import { eq, desc } from 'drizzle-orm';
 import type { PageServerLoad } from './$types';
 import { events } from '$lib/database/schema';
@@ -6,7 +6,7 @@ import { events } from '$lib/database/schema';
 export const load: PageServerLoad = async () => {
 	try {
 		// Fetch all public events ordered by creation date (newest first)
-		const publicEvents = await drizzleQuery
+		const publicEvents = await database
 			.select()
 			.from(events)
 			.where(eq(events.visibility, 'public'))

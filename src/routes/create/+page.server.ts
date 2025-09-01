@@ -1,4 +1,4 @@
-import { drizzleQuery } from '$lib/database/db';
+import { database } from '$lib/database/db';
 import { events } from '$lib/database/schema';
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions } from './$types';
@@ -66,7 +66,7 @@ export const actions: Actions = {
 
 		const eventId = generateEventId();
 
-		await drizzleQuery
+		await database
 			.insert(events)
 			.values({
 				id: eventId,
