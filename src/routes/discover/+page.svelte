@@ -295,12 +295,12 @@
 								</div>
 							</div>
 
-							<div class="flex space-x-3">
+							<div class="flex">
 								<button
 									on:click={() => goto(`/event/${event.id}`)}
 									class="flex-1 rounded-sm border-2 border-violet-500 bg-violet-400/20 px-4 py-2 font-semibold duration-200 hover:bg-violet-400/70"
 								>
-									View Event
+									View
 								</button>
 							</div>
 						</div>
