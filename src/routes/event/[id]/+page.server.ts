@@ -69,6 +69,7 @@ export const actions: Actions = {
 		const formData = await request.formData();
 
 		const name = formData.get('newAttendeeName') as string;
+		const numberOfGuests = parseInt(formData.get('numberOfGuests') as string) || 0;
 		const userId = cookies.get('cactoideUserId');
 
 		if (!name?.trim() || !userId) {
@@ -82,27 +83,48 @@ export const actions: Actions = {
 				return fail(404, { error: 'Event not found' });
 			}
 
+			// Get current RSVPs
+			const currentRSVPs = await database.select().from(rsvps).where(eq(rsvps.eventId, eventId));
+
+			// Calculate total attendees (including guests)
+			const totalAttendees = currentRSVPs.length + numberOfGuests;
+
 			// Check if event is full (for limited type events)
 			if (eventData.type === 'limited' && eventData.attendeeLimit) {
-				const currentRSVPs = await database.select().from(rsvps).where(eq(rsvps.eventId, eventId));
-				if (currentRSVPs.length >= eventData.attendeeLimit) {
-					return fail(400, { error: 'Event is full' });
+				if (totalAttendees > eventData.attendeeLimit) {
+					return fail(400, {
+						error: `Event capacity exceeded. You're trying to add ${numberOfGuests + 1} attendees (including yourself), but only ${eventData.attendeeLimit - currentRSVPs.length} spots remain.`
+					});
 				}
 			}
 
 			// Check if name is already in the list
-			const existingRSVPs = await database.select().from(rsvps).where(eq(rsvps.eventId, eventId));
-			if (existingRSVPs.some((rsvp) => rsvp.name.toLowerCase() === name.toLowerCase())) {
+			if (currentRSVPs.some((rsvp) => rsvp.name.toLowerCase() === name.toLowerCase())) {
 				return fail(400, { error: 'Name already exists for this event' });
 			}
 
-			// Add RSVP to database
-			await database.insert(rsvps).values({
-				eventId: eventId,
-				name: name.trim(),
-				userId: userId,
-				createdAt: new Date()
-			});
+			// Prepare RSVPs to insert
+			const rsvpsToInsert = [
+				{
+					eventId: eventId,
+					name: name.trim(),
+					userId: userId,
+					createdAt: new Date()
+				}
+			];
+
+			// Add guest entries
+			for (let i = 1; i <= numberOfGuests; i++) {
+				rsvpsToInsert.push({
+					eventId: eventId,
+					name: `${name.trim()}'s Guest #${i}`,
+					userId: userId,
+					createdAt: new Date()
+				});
+			}
+
+			// Insert all RSVPs
+			await database.insert(rsvps).values(rsvpsToInsert);
 
 			return { success: true, type: 'add' };
 		} catch (err) {

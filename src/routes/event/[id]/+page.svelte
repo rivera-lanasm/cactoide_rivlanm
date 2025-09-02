@@ -14,6 +14,8 @@
 	let isAddingRSVP = false;
 	let error = '';
 	let success = '';
+	let addGuests = false;
+	let numberOfGuests = 1;
 
 	// Use server-side data
 	$: event = data.event;
@@ -22,7 +24,7 @@
 
 	// Handle form errors from server
 	$: if (form?.error) {
-		error = form.error;
+		error = String(form.error);
 		success = '';
 	}
 
@@ -31,6 +33,8 @@
 		success = 'RSVP added successfully!';
 		error = '';
 		newAttendeeName = '';
+		addGuests = false;
+		numberOfGuests = 1;
 	}
 
 	const eventId = $page.params.id;
@@ -179,7 +183,7 @@
 								return async ({ result, update }) => {
 									isAddingRSVP = false;
 									if (result.type === 'failure') {
-										error = result.data?.error || 'Failed to add RSVP';
+										error = String(result.data?.error || 'Failed to add RSVP');
 									}
 									update();
 								};
@@ -203,9 +207,48 @@
 								/>
 							</div>
 
+							<!-- Add Guests Toggle -->
+							<div class="flex items-center space-x-3">
+								<input
+									id="addGuests"
+									type="checkbox"
+									bind:checked={addGuests}
+									class="h-4 w-4 rounded border-gray-300 text-violet-600 focus:ring-violet-500"
+								/>
+								<label for="addGuests" class="text-sm font-medium text-white">
+									Add guest users
+								</label>
+							</div>
+
+							<!-- Number of Guests Input -->
+							{#if addGuests}
+								<div>
+									<label for="numberOfGuests" class="mb-2 block text-sm font-semibold">
+										Number of Guests <span class="text-red-400">*</span>
+									</label>
+									<input
+										id="numberOfGuests"
+										name="numberOfGuests"
+										type="number"
+										bind:value={numberOfGuests}
+										min="1"
+										max="10"
+										class="border-dark-300 w-full rounded-sm border-2 px-4 py-3 text-slate-900 shadow-sm"
+										placeholder="Enter number of guests"
+										required
+									/>
+									<p class="mt-1 text-xs text-slate-400">
+										Guests will be added as "{newAttendeeName || 'Your Name'}'s Guest #1", "{newAttendeeName ||
+											'Your Name'}'s Guest #2", etc.
+									</p>
+								</div>
+							{/if}
+
 							<button
 								type="submit"
-								disabled={isAddingRSVP || !newAttendeeName.trim()}
+								disabled={isAddingRSVP ||
+									!newAttendeeName.trim() ||
+									(addGuests && numberOfGuests < 1)}
 								class=" hover:bg-violet-400/70' w-full rounded-sm border-2 border-violet-500 bg-violet-400/20 px-4 py-3 py-4 font-bold font-medium font-semibold text-white shadow-lg transition-all duration-200 hover:scale-105"
 							>
 								{#if isAddingRSVP}
@@ -215,6 +258,8 @@
 										></div>
 										Adding...
 									</div>
+								{:else if addGuests && numberOfGuests > 0}
+									Join Event + {numberOfGuests} Guest{numberOfGuests > 1 ? 's' : ''}
 								{:else}
 									Join Event
 								{/if}
@@ -243,12 +288,22 @@
 								>
 									<div class="flex items-center space-x-3">
 										<div
-											class="flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold"
+											class="flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold {attendee.name.includes(
+												"'s Guest"
+											)
+												? 'text-white-400 bg-violet-500/40'
+												: 'bg-violet-500/20 text-violet-400'}"
 										>
 											{attendee.name.charAt(0).toUpperCase()}
 										</div>
 										<div>
-											<p class="font-medium text-white">{attendee.name}</p>
+											<p
+												class="font-medium text-white {attendee.name.includes("'s Guest")
+													? 'text-amber-300'
+													: ''}"
+											>
+												{attendee.name}
+											</p>
 											<p class="text-xs text-violet-400">
 												{(() => {
 													const date = new Date(attendee.created_at);
@@ -271,7 +326,7 @@
 												clearMessages();
 												return async ({ result, update }) => {
 													if (result.type === 'failure') {
-														error = result.data?.error || 'Failed to remove RSVP';
+														error = String(result.data?.error || 'Failed to remove RSVP');
 													}
 													update();
 												};
@@ -300,7 +355,7 @@
 						</div>
 					{/if}
 				</div>
-				succcess: {success}
+
 				<!-- Action Buttons -->
 				<div class="max-w-2xl">
 					<button
