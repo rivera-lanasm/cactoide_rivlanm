@@ -4,7 +4,7 @@
 	import { goto } from '$app/navigation';
 
 	export let data;
-	export let form: any;
+	export let form;
 
 	let eventData = {
 		name: data.event.name,
@@ -29,7 +29,7 @@
 
 	// Pre-fill form with values from server on error
 	$: if (form && 'values' in form && form.values) {
-		const values = form.values as any;
+		const values = form.values;
 		eventData = {
 			...eventData,
 			...values,
