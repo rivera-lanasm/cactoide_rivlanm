@@ -1,23 +1,23 @@
 <script lang="ts">
-	import type { CreateEventData, EventType } from '$lib/types';
+	import type { EventType } from '$lib/types';
 	import { enhance } from '$app/forms';
 	import { goto } from '$app/navigation';
 
+	export let data;
 	export let form;
 
-	let eventData: CreateEventData = {
-		name: '',
-		date: '',
-		time: '',
-		location: '',
-		type: 'unlimited',
-		attendee_limit: undefined,
-		visibility: 'public'
+	let eventData = {
+		name: data.event.name,
+		date: data.event.date,
+		time: data.event.time,
+		location: data.event.location,
+		type: data.event.type,
+		attendee_limit: data.event.attendeeLimit,
+		visibility: data.event.visibility
 	};
 
 	let errors: Record<string, string> = {};
 	let isSubmitting = false;
-	let currentUserId = '';
 
 	// Get today's date in YYYY-MM-DD format for min attribute
 	const today = new Date().toISOString().split('T')[0];
@@ -28,39 +28,41 @@
 	}
 
 	// Pre-fill form with values from server on error
-	$: if (form?.values) {
+	$: if (form && 'values' in form && form.values) {
+		const values = form.values;
 		eventData = {
 			...eventData,
-			...form.values,
-			attendee_limit: form.values.attendee_limit
-				? parseInt(String(form.values.attendee_limit))
-				: undefined
+			...values,
+			attendee_limit: values.attendee_limit ? parseInt(String(values.attendee_limit)) : null
 		};
 	}
 
 	const handleTypeChange = (type: EventType) => {
 		eventData.type = type;
 		if (type === 'unlimited') {
-			eventData.attendee_limit = undefined;
+			eventData.attendee_limit = null;
 		}
 	};
 
 	const handleCancel = () => {
-		goto(`/discover`);
+		goto(`/event/${data.event.id}`);
 	};
 </script>
 
 <svelte:head>
-	<title>Create Event - Cactoide</title>
+	<title>Edit Event - {data.event.name} - Cactoide</title>
 </svelte:head>
 
 <div class="flex min-h-screen flex-col">
 	<!-- Main Content -->
 	<div class="container mx-auto flex-1 px-4 py-8">
 		<div class="mx-auto max-w-md">
-			<!-- Event Creation Form -->
+			<!-- Event Edit Form -->
 			<div class="rounded-sm border p-8">
-				<h2 class="mb-8 text-center text-3xl font-bold text-violet-400">Create New Event</h2>
+				<div class="mb-8 text-center">
+					<h2 class="text-3xl font-bold text-violet-400">Edit Event</h2>
+					<p class="mt-2 text-sm text-slate-400">Update your event details</p>
+				</div>
 
 				<form
 					method="POST"
@@ -71,7 +73,7 @@
 							if (result.type === 'failure') {
 								// Handle validation errors
 								if (result.data?.error) {
-									errors.server = result.data.error;
+									errors.server = String(result.data.error);
 								}
 							}
 							update();
@@ -79,7 +81,6 @@
 					}}
 					class="space-y-6"
 				>
-					<input type="hidden" name="userId" value={currentUserId} />
 					<input type="hidden" name="type" value={eventData.type} />
 					<input type="hidden" name="visibility" value={eventData.visibility} />
 
@@ -169,31 +170,33 @@
 
 					<!-- Event Type -->
 					<div>
-						<label class="text-dark-800 mb-3 block text-sm font-semibold">
-							Type <span class="text-red-400">*</span></label
-						>
-						<div class="grid grid-cols-2 gap-3">
-							<button
-								type="button"
-								class="rounded-sm border-2 px-4 py-3 font-medium transition-all duration-200 {eventData.type ===
-								'unlimited'
-									? ' border-violet-500 bg-violet-400/20 font-semibold hover:bg-violet-400/70'
-									: 'border-dark-300 text-dark-700'}"
-								on:click={() => handleTypeChange('unlimited')}
-							>
-								Unlimited
-							</button>
-							<button
-								type="button"
-								class="rounded-sm border-2 px-4 py-3 font-medium transition-all duration-200 {eventData.type ===
-								'limited'
-									? ' border-violet-500 bg-violet-400/20 font-semibold hover:bg-violet-400/70'
-									: 'border-dark-300 text-dark-700 bg-gray-600/20 hover:bg-gray-600/70'}"
-								on:click={() => handleTypeChange('limited')}
-							>
-								Limited
-							</button>
-						</div>
+						<fieldset>
+							<legend class="text-dark-800 mb-3 block text-sm font-semibold">
+								Type <span class="text-red-400">*</span>
+							</legend>
+							<div class="grid grid-cols-2 gap-3">
+								<button
+									type="button"
+									class="rounded-sm border-2 px-4 py-3 font-medium transition-all duration-200 {eventData.type ===
+									'unlimited'
+										? ' border-violet-500 bg-violet-400/20 font-semibold hover:bg-violet-400/70'
+										: 'border-dark-300 text-dark-700'}"
+									on:click={() => handleTypeChange('unlimited')}
+								>
+									Unlimited
+								</button>
+								<button
+									type="button"
+									class="rounded-sm border-2 px-4 py-3 font-medium transition-all duration-200 {eventData.type ===
+									'limited'
+										? ' border-violet-500 bg-violet-400/20 font-semibold hover:bg-violet-400/70'
+										: 'border-dark-300 text-dark-700 bg-gray-600/20 hover:bg-gray-600/70'}"
+									on:click={() => handleTypeChange('limited')}
+								>
+									Limited
+								</button>
+							</div>
+						</fieldset>
 					</div>
 
 					<!-- Limit (only for limited events) -->
@@ -221,38 +224,41 @@
 
 					<!-- Event Visibility -->
 					<div>
-						<label class="text-dark-800 mb-3 block text-sm font-semibold">
-							Visibility <span class="text-red-400">*</span></label
-						>
-						<div class="grid grid-cols-2 gap-3">
-							<button
-								type="button"
-								class="rounded-sm border-2 px-4 py-3 font-medium transition-all duration-200 {eventData.visibility ===
-								'public'
-									? ' border-violet-500 bg-violet-400/20 font-semibold hover:bg-violet-400/70'
-									: 'border-dark-300 text-dark-700'}"
-								on:click={() => (eventData.visibility = 'public')}
-							>
-								🌍 Public
-							</button>
-							<button
-								type="button"
-								class="rounded-sm border-2 px-4 py-3 font-medium transition-all duration-200 {eventData.visibility ===
-								'private'
-									? ' border-violet-500 bg-violet-400/20 font-semibold hover:bg-violet-400/70'
-									: 'border-dark-300 text-dark-700 bg-gray-600/20 hover:bg-gray-600/70'}"
-								on:click={() => (eventData.visibility = 'private')}
-							>
-								🔒 Private
-							</button>
-						</div>
-						<p class="mt-2 text-xs text-slate-400">
-							{eventData.visibility === 'public'
-								? 'Public events are visible to everyone and can be discovered by others'
-								: 'Private events are only visible to you and people you share the link with'}
-						</p>
+						<fieldset>
+							<legend class="text-dark-800 mb-3 block text-sm font-semibold">
+								Visibility <span class="text-red-400">*</span>
+							</legend>
+							<div class="grid grid-cols-2 gap-3">
+								<button
+									type="button"
+									class="rounded-sm border-2 px-4 py-3 font-medium transition-all duration-200 {eventData.visibility ===
+									'public'
+										? ' border-violet-500 bg-violet-400/20 font-semibold hover:bg-violet-400/70'
+										: 'border-dark-300 text-dark-700'}"
+									on:click={() => (eventData.visibility = 'public')}
+								>
+									🌍 Public
+								</button>
+								<button
+									type="button"
+									class="rounded-sm border-2 px-4 py-3 font-medium transition-all duration-200 {eventData.visibility ===
+									'private'
+										? ' border-violet-500 bg-violet-400/20 font-semibold hover:bg-violet-400/70'
+										: 'border-dark-300 text-dark-700 bg-gray-600/20 hover:bg-gray-600/70'}"
+									on:click={() => (eventData.visibility = 'private')}
+								>
+									🔒 Private
+								</button>
+							</div>
+							<p class="mt-2 text-xs text-slate-400">
+								{eventData.visibility === 'public'
+									? 'Public events are visible to everyone and can be discovered by others'
+									: 'Private events are only visible to you and people you share the link with'}
+							</p>
+						</fieldset>
 					</div>
 
+					<!-- Action Buttons -->
 					<div class="flex space-x-3">
 						<button
 							type="button"
@@ -261,19 +267,18 @@
 						>
 							Cancel
 						</button>
-						<!-- Submit Button -->
 						<button
 							type="submit"
 							disabled={isSubmitting}
-							class="hover:bg-violet-400/70'l rounded-sm border-2 border-violet-500 bg-violet-400/20 px-4 py-3 py-4 font-bold font-medium font-semibold text-white shadow-lg transition-all duration-200 hover:scale-105"
+							class="hover:bg-violet-400/70' flex-1 rounded-sm border-2 border-violet-500 bg-violet-400/20 px-4 py-3 font-bold font-medium font-semibold text-white shadow-lg transition-all duration-200 hover:scale-105"
 						>
 							{#if isSubmitting}
 								<div class="flex items-center justify-center">
 									<div class="mr-2 h-5 w-5 animate-spin rounded-full border-b-2 border-white"></div>
-									Creating Event...
+									Updating...
 								</div>
 							{:else}
-								Create Event
+								Update Event
 							{/if}
 						</button>
 					</div>

@@ -35,7 +35,7 @@
 
 	const eventId = $page.params.id;
 
-	function copyEventLink() {
+	const copyEventLink = () => {
 		const url = `${window.location.origin}/event/${eventId}`;
 		navigator.clipboard.writeText(url).then(() => {
 			success = 'Event link copied to clipboard!';
@@ -43,12 +43,12 @@
 				success = '';
 			}, 3000);
 		});
-	}
+	};
 
-	function clearMessages() {
+	const clearMessages = () => {
 		error = '';
 		success = '';
-	}
+	};
 </script>
 
 <svelte:head>
@@ -300,7 +300,7 @@
 						</div>
 					{/if}
 				</div>
-
+				succcess: {success}
 				<!-- Action Buttons -->
 				<div class="max-w-2xl">
 					<button

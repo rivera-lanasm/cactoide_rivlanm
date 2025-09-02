@@ -2,14 +2,10 @@
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 
-	function navigateTo(path: string) {
-		goto(path);
-	}
-
 	// Check if current page is active
-	function isActive(path: string): boolean {
+	const isActive = (path: string): boolean => {
 		return $page.url.pathname === path;
-	}
+	};
 </script>
 
 <nav class="relative z-50 backdrop-blur-md">
@@ -18,7 +14,7 @@
 			<!-- Logo/Brand -->
 			<div class="flex items-center">
 				<button
-					on:click={() => navigateTo('/')}
+					on:click={() => goto('/')}
 					class="cursor-pointer text-2xl font-medium text-violet-400"
 				>
 					Cactoide
@@ -28,28 +24,28 @@
 			<!-- Navigation -->
 			<div class="md:flex md:items-center md:space-x-8">
 				<button
-					on:click={() => navigateTo('/')}
+					on:click={() => goto('/')}
 					class={isActive('/') ? 'text-violet-400' : 'cursor-pointer'}
 				>
 					Home
 				</button>
 
 				<button
-					on:click={() => navigateTo('/discover')}
+					on:click={() => goto('/discover')}
 					class={isActive('/discover') ? 'text-violet-400' : 'cursor-pointer'}
 				>
 					Discover
 				</button>
 
 				<button
-					on:click={() => navigateTo('/create')}
+					on:click={() => goto('/create')}
 					class={isActive('/create') ? 'text-violet-400' : 'cursor-pointer'}
 				>
 					Create
 				</button>
 
 				<button
-					on:click={() => navigateTo('/event')}
+					on:click={() => goto('/event')}
 					class={isActive('/event') ? 'text-violet-400' : 'cursor-pointer'}
 				>
 					My Events

@@ -2,6 +2,7 @@ import { database } from '$lib/database/db';
 import { events } from '$lib/database/schema';
 import { fail } from '@sveltejs/kit';
 import { eq, desc } from 'drizzle-orm';
+import type { Actions } from './$types';
 
 export const load = async ({ cookies }) => {
 	const userId = cookies.get('cactoideUserId');
