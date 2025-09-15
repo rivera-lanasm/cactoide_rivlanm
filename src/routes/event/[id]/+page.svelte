@@ -4,6 +4,8 @@
 	import { goto } from '$app/navigation';
 	import { enhance } from '$app/forms';
 	import { formatTime, formatDate } from '$lib/dateHelpers.js';
+	import CalendarModal from '$lib/components/CalendarModal.svelte';
+	import type { CalendarEvent } from '$lib/calendarHelpers.js';
 
 	export let data: { event: Event; rsvps: RSVP[]; userId: string };
 	export let form;
@@ -16,11 +18,24 @@
 	let success = '';
 	let addGuests = false;
 	let numberOfGuests = 1;
+	let showCalendarModal = false;
+	let calendarEvent: CalendarEvent;
 
 	// Use server-side data
 	$: event = data.event;
 	$: rsvps = data.rsvps;
 	$: currentUserId = data.userId;
+
+	// Create calendar event object when event data changes
+	$: if (event) {
+		calendarEvent = {
+			name: event.name,
+			date: event.date,
+			time: event.time,
+			location: event.location,
+			url: `${window.location.origin}/event/${eventId}`
+		};
+	}
 
 	// Handle form errors from server
 	$: if (form?.error) {
@@ -37,7 +52,7 @@
 		numberOfGuests = 1;
 	}
 
-	const eventId = $page.params.id;
+	const eventId = $page.params.id || '';
 
 	const copyEventLink = () => {
 		const url = `${window.location.origin}/event/${eventId}`;
@@ -52,6 +67,15 @@
 	const clearMessages = () => {
 		error = '';
 		success = '';
+	};
+
+	// Calendar modal functions
+	const openCalendarModal = () => {
+		showCalendarModal = true;
+	};
+
+	const closeCalendarModal = () => {
+		showCalendarModal = false;
 	};
 </script>
 
@@ -357,18 +381,35 @@
 				</div>
 
 				<!-- Action Buttons -->
-				<div class="max-w-2xl">
+				<div class="max-w-2xl space-y-3">
 					<button
 						on:click={copyEventLink}
 						class="hover:bg-violet-400/70' w-full rounded-sm border-2 border-violet-500 bg-violet-400/20 px-4 py-3 py-4 font-bold font-medium font-semibold text-white shadow-lg transition-all duration-200 hover:scale-105"
 					>
 						Copy Link
 					</button>
+					<button
+						on:click={openCalendarModal}
+						class="hover:bg-violet-400/70' w-full rounded-sm border-2 border-violet-500 bg-violet-400/20 px-4 py-3 py-4 font-bold font-medium font-semibold text-white shadow-lg transition-all duration-200 hover:scale-105"
+					>
+						Add to Calendar
+					</button>
 				</div>
 			</div>
 		{/if}
 	</div>
 </div>
+
+<!-- Calendar Modal -->
+{#if calendarEvent}
+	<CalendarModal
+		bind:isOpen={showCalendarModal}
+		event={calendarEvent}
+		{eventId}
+		baseUrl={window.location.origin}
+		on:close={closeCalendarModal}
+	/>
+{/if}
 
 <!-- Success/Error Messages -->
 {#if success}
