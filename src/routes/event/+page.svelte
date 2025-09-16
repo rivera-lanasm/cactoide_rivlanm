@@ -2,6 +2,7 @@
 	import type { Event } from '$lib/types';
 	import { goto } from '$app/navigation';
 	import { formatTime, formatDate } from '$lib/dateHelpers';
+	import { t } from '$lib/i18n/i18n.js';
 
 	export let data: { events: Event[] };
 
@@ -60,7 +61,7 @@
 </script>
 
 <svelte:head>
-	<title>My Events - Cactoide</title>
+	<title>{t('event.myEventsTitle')}</title>
 </svelte:head>
 
 <div class="flex min-h-screen flex-col">
@@ -69,22 +70,24 @@
 		{#if userEvents.length === 0}
 			<div class="mx-auto max-w-2xl text-center">
 				<div class="mb-4 animate-pulse text-6xl">🎉</div>
-				<h2 class="mb-4 text-2xl font-bold">No Events Yet</h2>
+				<h2 class="mb-4 text-2xl font-bold">{t('event.noEventsYetTitle')}</h2>
 				<p class="text-white-600 mb-8">
-					You haven't created any events yet. Start by creating your first event!
+					{t('event.noEventsYetDescription')}
 				</p>
 				<button
 					on:click={() => goto('/create')}
 					class="rounded-sm border-2 border-violet-500 px-8 py-4 font-bold duration-400 hover:scale-110 hover:bg-violet-500/10"
 				>
-					Create Your First Event
+					{t('event.createYourFirstEventButton')}
 				</button>
 			</div>
 		{:else}
 			<div class="mx-auto max-w-4xl">
 				<div class="mb-6">
-					<h2 class="text-2xl font-bold text-slate-400">My Events ({userEvents.length})</h2>
-					<p class="text-slate-500">Manage your created events</p>
+					<h2 class="text-2xl font-bold text-slate-400">
+						{t('event.myEventsTitle')} ({userEvents.length})
+					</h2>
+					<p class="text-slate-500">{t('event.myEventsDescription')}</p>
 				</div>
 
 				<div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -104,7 +107,9 @@
 												d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
 											></path>
 										</svg>
-										<span>{formatDate(event.date)} at {formatTime(event.time)}</span>
+										<span
+											>{formatDate(event.date)} {t('common.atTime')} {formatTime(event.time)}</span
+										>
 									</div>
 									<div class="flex items-center space-x-2">
 										<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -130,7 +135,7 @@
 												? 'border-amber-600 text-amber-600'
 												: 'border-teal-500 text-teal-500'}"
 										>
-											{event.type === 'limited' ? 'Limited' : 'Unlimited'}
+											{event.type === 'limited' ? t('common.limited') : t('common.unlimited')}
 										</span>
 										<span
 											class="rounded-sm border px-2 py-1 text-xs font-medium {event.visibility ===
@@ -138,7 +143,7 @@
 												? 'border-green-300 text-green-400'
 												: 'border-orange-300 text-orange-400'}"
 										>
-											{event.visibility === 'public' ? 'Public' : 'Private'}
+											{event.visibility === 'public' ? t('common.public') : t('common.private')}
 										</span>
 									</div>
 									<div class="flex items-center space-x-2"></div>
@@ -149,7 +154,7 @@
 								<button
 									on:click={() => goto(`/event/${event.id}`)}
 									class="flex-1 rounded-sm border-2 border-violet-500 bg-violet-400/20 px-4 py-2 font-semibold duration-200 hover:bg-violet-400/70"
-									aria-label="View event"
+									aria-label={t('event.viewEventAriaLabel')}
 								>
 									<svg
 										class="mx-auto h-4 w-4"
@@ -174,7 +179,7 @@
 								<button
 									on:click={() => goto(`/event/${event.id}/edit`)}
 									class="flex-1 rounded-sm border-2 border-blue-400 bg-blue-400/20 px-4 py-2 font-semibold text-white duration-200 hover:bg-blue-400/70"
-									aria-label="Edit event"
+									aria-label={t('event.editEventAriaLabel')}
 								>
 									<svg
 										class="mx-auto h-4 w-4"
@@ -193,7 +198,7 @@
 								<button
 									on:click={() => openDeleteModal(event)}
 									class="flex-1 rounded-sm border-2 border-red-400 bg-red-400/20 px-4 py-2 font-semibold text-white duration-200 hover:bg-red-400/70"
-									aria-label="Delete event"
+									aria-label={t('event.deleteEventAriaLabel')}
 								>
 									<svg
 										class="mx-auto h-4 w-4"
@@ -228,10 +233,9 @@
 				>
 					<span class="text-2xl text-red-600">🗑️</span>
 				</div>
-				<h3 class="mb-2 text-xl font-bold text-white">Delete Event</h3>
+				<h3 class="mb-2 text-xl font-bold text-white">{t('event.deleteEventTitle')}</h3>
 				<p class="text-slate-400">
-					Are you sure you want to delete "<span class="font-semibold">{eventToDelete.name}</span>"?
-					This action cannot be undone and will remove all RSVPs.
+					{t('event.deleteEventDescription', { eventName: eventToDelete.name })}
 				</p>
 			</div>
 
@@ -240,13 +244,13 @@
 					on:click={closeDeleteModal}
 					class="flex-1 rounded-sm border-2 border-slate-300 bg-slate-200 px-4 py-2 font-semibold text-slate-700 transition-all duration-200 hover:bg-slate-300"
 				>
-					Cancel
+					{t('common.cancel')}
 				</button>
 				<button
 					on:click={confirmDelete}
 					class="flex-1 rounded-sm border-2 border-red-500 bg-red-500 px-4 py-2 font-semibold text-white transition-all duration-200 hover:bg-red-600"
 				>
-					Delete
+					{t('common.delete')}
 				</button>
 			</div>
 		</div>

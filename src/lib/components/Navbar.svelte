@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
+	import { t } from '$lib/i18n/i18n.js';
 
 	// Check if current page is active
 	const isActive = (path: string): boolean => {
@@ -27,28 +28,28 @@
 					on:click={() => goto('/')}
 					class={isActive('/') ? 'text-violet-400' : 'cursor-pointer'}
 				>
-					Home
+					{t('navigation.home')}
 				</button>
 
 				<button
 					on:click={() => goto('/discover')}
 					class={isActive('/discover') ? 'text-violet-400' : 'cursor-pointer'}
 				>
-					Discover
+					{t('navigation.discover')}
 				</button>
 
 				<button
 					on:click={() => goto('/create')}
 					class={isActive('/create') ? 'text-violet-400' : 'cursor-pointer'}
 				>
-					Create
+					{t('navigation.create')}
 				</button>
 
 				<button
 					on:click={() => goto('/event')}
 					class={isActive('/event') ? 'text-violet-400' : 'cursor-pointer'}
 				>
-					My Events
+					{t('navigation.myEvents')}
 				</button>
 			</div>
 		</div>

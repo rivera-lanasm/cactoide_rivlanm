@@ -1,13 +1,14 @@
 <script>
 	import '../app.css';
 	import Navbar from '$lib/components/Navbar.svelte';
+	import { t } from '$lib/i18n/i18n.js';
 
 	let { data } = $props();
 </script>
 
 <svelte:head>
-	<title>Cactoide -</title>
-	<meta name="description" content="Create and manage event RSVPs" />
+	<title>{t('layout.defaultTitle')}</title>
+	<meta name="description" content={t('layout.defaultDescription')} />
 	<meta name="apple-mobile-web-app-capable" content="yes" />
 	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
@@ -28,13 +29,12 @@
 			<div class="container mx-auto px-4 text-center">
 				<div class="text-sm">
 					<p class="mb-4 text-gray-100/80">
-						Your UserID storated as a cookie: <span class="font-bold text-violet-400"
-							>{data.cactoideUserId
-								? data.cactoideUserId
-								: 'First time visiting. Generating new UserID...'}</span
+						{t('layout.userIdCookieText')}
+						<span class="font-bold text-violet-400"
+							>{data.cactoideUserId ? data.cactoideUserId : t('layout.firstTimeVisiting')}</span
 						>
 					</p>
-					<p>&copy; 2025 Cactoide</p>
+					<p>{t('layout.copyright')}</p>
 				</div>
 			</div>
 		</footer>

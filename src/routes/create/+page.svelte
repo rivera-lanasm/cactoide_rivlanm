@@ -2,6 +2,7 @@
 	import type { CreateEventData, EventType } from '$lib/types';
 	import { enhance } from '$app/forms';
 	import { goto } from '$app/navigation';
+	import { t } from '$lib/i18n/i18n.js';
 
 	export let form;
 
@@ -51,7 +52,7 @@
 </script>
 
 <svelte:head>
-	<title>Create Event - Cactoide</title>
+	<title>{t('create.title')}</title>
 </svelte:head>
 
 <div class="flex min-h-screen flex-col">
@@ -60,7 +61,7 @@
 		<div class="mx-auto max-w-md">
 			<!-- Event Creation Form -->
 			<div class="rounded-sm border p-8">
-				<h2 class="mb-8 text-center text-3xl font-bold text-violet-400">Create New Event</h2>
+				<h2 class="mb-8 text-center text-3xl font-bold text-violet-400">{t('create.formTitle')}</h2>
 
 				<form
 					method="POST"
@@ -71,7 +72,7 @@
 							if (result.type === 'failure') {
 								// Handle validation errors
 								if (result.data?.error) {
-									errors.server = result.data.error;
+									errors.server = String(result.data.error);
 								}
 							}
 							update();
@@ -92,7 +93,7 @@
 					<!-- Event Name -->
 					<div>
 						<label for="name" class="text-dark-800 mb-3 block text-sm font-semibold">
-							Name <span class="text-red-400">*</span>
+							{t('create.eventNameLabel')} <span class="text-red-400">{t('common.required')}</span>
 						</label>
 						<input
 							id="name"
@@ -100,7 +101,7 @@
 							type="text"
 							bind:value={eventData.name}
 							class="border-dark-300 w-full rounded-sm border-2 px-4 py-3 text-slate-900 shadow-sm"
-							placeholder="Enter event name"
+							placeholder={t('create.eventNamePlaceholder')}
 							maxlength="100"
 							required
 						/>
@@ -113,7 +114,7 @@
 					<div class="grid grid-cols-2 gap-4">
 						<div>
 							<label for="date" class="text-dark-800 mb-3 block text-sm font-semibold">
-								Date <span class="text-red-400">*</span>
+								{t('create.dateLabel')} <span class="text-red-400">{t('common.required')}</span>
 							</label>
 							<input
 								id="date"
@@ -131,7 +132,7 @@
 
 						<div>
 							<label for="time" class="text-dark-800 mb-3 block text-sm font-semibold">
-								Time <span class="text-red-400">*</span>
+								{t('create.timeLabel')} <span class="text-red-400">{t('common.required')}</span>
 							</label>
 							<input
 								id="time"
@@ -150,7 +151,7 @@
 					<!-- Location -->
 					<div>
 						<label for="location" class="text-dark-800 mb-3 block text-sm font-semibold">
-							Location <span class="text-red-400">*</span>
+							{t('create.locationLabel')} <span class="text-red-400">{t('common.required')}</span>
 						</label>
 						<input
 							id="location"
@@ -158,7 +159,7 @@
 							type="text"
 							bind:value={eventData.location}
 							class="border-dark-300 placeholder-dark-500 w-full rounded-sm border-2 px-4 py-3 text-slate-900 shadow-sm transition-all"
-							placeholder="Enter location"
+							placeholder={t('create.locationPlaceholder')}
 							maxlength="200"
 							required
 						/>
@@ -170,7 +171,8 @@
 					<!-- Event Type -->
 					<div>
 						<label class="text-dark-800 mb-3 block text-sm font-semibold">
-							Type <span class="text-red-400">*</span></label
+							{t('create.typeLabel')}
+							<span class="text-red-400">{t('common.required')}</span></label
 						>
 						<div class="grid grid-cols-2 gap-3">
 							<button
@@ -181,7 +183,7 @@
 									: 'border-dark-300 text-dark-700'}"
 								on:click={() => handleTypeChange('unlimited')}
 							>
-								Unlimited
+								{t('create.unlimitedOption')}
 							</button>
 							<button
 								type="button"
@@ -191,7 +193,7 @@
 									: 'border-dark-300 text-dark-700 bg-gray-600/20 hover:bg-gray-600/70'}"
 								on:click={() => handleTypeChange('limited')}
 							>
-								Limited
+								{t('create.limitedOption')}
 							</button>
 						</div>
 					</div>
@@ -200,7 +202,8 @@
 					{#if eventData.type === 'limited'}
 						<div>
 							<label for="limit" class="text-dark-800 mb-3 block text-sm font-semibold">
-								Attendee Limit *
+								{t('create.attendeeLimitLabel')}
+								{t('common.required')}
 							</label>
 							<input
 								id="attendee_limit"
@@ -210,7 +213,7 @@
 								min="1"
 								max="1000"
 								class="border-dark-300 w-full rounded-sm border-2 bg-white px-4 py-3 text-slate-900 shadow-sm transition-all duration-200"
-								placeholder="Enter limit"
+								placeholder={t('create.attendeeLimitPlaceholder')}
 								required
 							/>
 							{#if errors.attendee_limit}
@@ -222,7 +225,8 @@
 					<!-- Event Visibility -->
 					<div>
 						<label class="text-dark-800 mb-3 block text-sm font-semibold">
-							Visibility <span class="text-red-400">*</span></label
+							{t('create.visibilityLabel')}
+							<span class="text-red-400">{t('common.required')}</span></label
 						>
 						<div class="grid grid-cols-2 gap-3">
 							<button
@@ -233,7 +237,7 @@
 									: 'border-dark-300 text-dark-700'}"
 								on:click={() => (eventData.visibility = 'public')}
 							>
-								🌍 Public
+								{t('create.publicOption')}
 							</button>
 							<button
 								type="button"
@@ -243,13 +247,13 @@
 									: 'border-dark-300 text-dark-700 bg-gray-600/20 hover:bg-gray-600/70'}"
 								on:click={() => (eventData.visibility = 'private')}
 							>
-								🔒 Private
+								{t('create.privateOption')}
 							</button>
 						</div>
 						<p class="mt-2 text-xs text-slate-400">
 							{eventData.visibility === 'public'
-								? 'Public events are visible to everyone and can be discovered by others'
-								: 'Private events are only visible to you and people you share the link with'}
+								? t('create.publicDescription')
+								: t('create.privateDescription')}
 						</p>
 					</div>
 
@@ -259,7 +263,7 @@
 							on:click={handleCancel}
 							class="flex-1 rounded-sm border-2 border-slate-300 bg-slate-200 px-4 py-3 font-semibold text-slate-700 transition-all duration-200 hover:bg-slate-400 hover:text-slate-200"
 						>
-							Cancel
+							{t('common.cancel')}
 						</button>
 						<!-- Submit Button -->
 						<button
@@ -270,10 +274,10 @@
 							{#if isSubmitting}
 								<div class="flex items-center justify-center">
 									<div class="mr-2 h-5 w-5 animate-spin rounded-full border-b-2 border-white"></div>
-									Creating Event...
+									{t('create.creatingEvent')}
 								</div>
 							{:else}
-								Create Event
+								{t('create.createEventButton')}
 							{/if}
 						</button>
 					</div>
