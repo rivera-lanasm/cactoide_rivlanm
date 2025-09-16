@@ -34,8 +34,10 @@
 		eventData = {
 			...eventData,
 			...values,
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			attendee_limit: (values as any).attendee_limit
-				? parseInt(String((values as any).attendee_limit))
+				? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+					parseInt(String((values as any).attendee_limit))
 				: null
 		};
 	}
