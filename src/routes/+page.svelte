@@ -1,45 +1,41 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { t } from '$lib/i18n/i18n.js';
 </script>
 
 <svelte:head>
-	<title>Cactoide - The RSVP site</title>
-	<meta
-		name="description"
-		content="Create and manage event RSVPs. No registration required, instant sharing."
-	/>
+	<title>{t('home.title')}</title>
+	<meta name="description" content={t('home.description')} />
 </svelte:head>
 
 <div class="flex min-h-screen flex-col">
 	<section class="mx-auto w-full pt-20 pb-20 md:w-3/4">
 		<div class="container mx-auto px-4 text-center">
 			<h1 class="text-5xl font-bold md:text-7xl lg:text-8xl">
-				Cactoide(ea)<span class="text-violet-400"
+				{t('home.mainTitle')}<span class="text-violet-400"
 					><a href="https://en.wikipedia.org/wiki/Cactoideae" target="_blank">*</a></span
 				> 🌵
 			</h1>
 
-			<h2 class="mt-6 text-xl md:text-2xl">The Ultimate RSVP Platform</h2>
+			<h2 class="mt-6 text-xl md:text-2xl">{t('home.subtitle')}</h2>
 			<p class="mt-4 text-lg italic md:text-xl">
-				Create, share, and manage events with zero friction.
+				{t('home.tagline')}
 			</p>
 
 			<h2 class="mt-6 pt-8 text-xl md:text-2xl">
-				Why Cactoide(ae)<span class="text-violet-400"
+				{t('home.whyCactoideTitle')}<span class="text-violet-400"
 					><a href="https://en.wikipedia.org/wiki/Cactoideae" target="_blank">*</a></span
 				>?🌵
 			</h2>
 			<p class="mt-4 text-lg md:text-xl">
-				Like the cactus, great events bloom under any condition when managed with care. Cactoide(ae)
-				helps you streamline RSVPs, simplify coordination, and keep every detail efficient—so your
-				gatherings are resilient, vibrant, and unforgettable.
+				{t('home.whyCactoideDescription')}
 			</p>
 
 			<button
 				on:click={() => goto('/create')}
 				class="mt-8 rounded-sm border-2 border-violet-500 px-8 py-4 font-bold duration-400 hover:scale-110 hover:bg-violet-500/10"
 			>
-				Create Event Now
+				{t('home.createEventNow')}
 			</button>
 		</div>
 	</section>
@@ -48,8 +44,8 @@
 	<section class="py-8">
 		<div class="container mx-auto px-4">
 			<div class="mb-16 text-center">
-				<h2 class="text-4xl font-bold text-white">Discover Public Events</h2>
-				<p class="mt-4 text-xl text-slate-300">See what others are planning and get inspired</p>
+				<h2 class="text-4xl font-bold text-white">{t('home.discoverPublicEventsTitle')}</h2>
+				<p class="mt-4 text-xl text-slate-300">{t('home.discoverPublicEventsDescription')}</p>
 			</div>
 
 			<div class="text-center">
@@ -57,7 +53,7 @@
 					on:click={() => goto('/discover')}
 					class="rounded-sm border-2 border-violet-500 px-8 py-4 font-bold duration-400 hover:scale-110 hover:bg-violet-500/10"
 				>
-					Browse All Public Events
+					{t('home.browseAllPublicEvents')}
 				</button>
 			</div>
 		</div>
@@ -67,7 +63,7 @@
 	<section class="py-20">
 		<div class="container mx-auto px-4">
 			<h2 class=" mb-16 text-center text-4xl font-bold">
-				Why <span class="text-violet-400">Cactoide?</span>
+				{t('home.whyCactoideFeatureTitle')}
 			</h2>
 			<div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
 				<!-- Feature 1 -->
@@ -75,10 +71,9 @@
 					<div class="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full">
 						<span class="text-4xl">🎯</span>
 					</div>
-					<h3 class="mb-4 text-xl font-bold text-white">Instant Event Creation</h3>
+					<h3 class="mb-4 text-xl font-bold text-white">{t('home.instantEventCreationTitle')}</h3>
 					<p class="">
-						Create events in seconds with our streamlined form. No accounts, no waiting, just pure
-						efficiency.
+						{t('home.instantEventCreationDescription')}
 					</p>
 				</div>
 
@@ -87,10 +82,9 @@
 					<div class="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full">
 						<span class="text-4xl">🔗</span>
 					</div>
-					<h3 class="mb-4 text-xl font-bold text-white">One-Click Sharing</h3>
+					<h3 class="mb-4 text-xl font-bold text-white">{t('home.oneClickSharingTitle')}</h3>
 					<p class="">
-						Each event gets a unique, memorable URL. Share instantly via any platform or messaging
-						app.
+						{t('home.oneClickSharingDescription')}
 					</p>
 				</div>
 
@@ -99,10 +93,9 @@
 					<div class="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full">
 						<span class="text-4xl">🔍</span>
 					</div>
-					<h3 class="mb-4 text-xl font-bold text-white">All-in-One Clarity</h3>
+					<h3 class="mb-4 text-xl font-bold text-white">{t('home.allInOneClarityTitle')}</h3>
 					<p class="">
-						No more scrolling through endless chats and reactions. See everyone’s availability and
-						responses neatly in one place.
+						{t('home.allInOneClarityDescription')}
 					</p>
 				</div>
 
@@ -111,10 +104,9 @@
 					<div class="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full">
 						<span class="text-4xl">👤</span>
 					</div>
-					<h3 class="mb-4 text-xl font-bold text-white">No Hassle, No Sign-Ups</h3>
+					<h3 class="mb-4 text-xl font-bold text-white">{t('home.noHassleNoSignUpsTitle')}</h3>
 					<p class="">
-						Skip registrations and endless forms. Unlike other event platforms, you create and share
-						instantly — no accounts, no barriers.
+						{t('home.noHassleNoSignUpsDescription')}
 					</p>
 				</div>
 
@@ -123,9 +115,9 @@
 					<div class="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full">
 						<span class="text-4xl">🛡️</span>
 					</div>
-					<h3 class="mb-4 text-xl font-bold text-white">Smart Limits</h3>
+					<h3 class="mb-4 text-xl font-bold text-white">{t('home.smartLimitsTitle')}</h3>
 					<p class="">
-						Choose between unlimited RSVPs or set a limited capacity. Perfect for any event size.
+						{t('home.smartLimitsDescription')}
 					</p>
 				</div>
 
@@ -134,9 +126,9 @@
 					<div class="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full">
 						<span class="text-4xl">✨</span>
 					</div>
-					<h3 class="mb-4 text-xl font-bold text-white">Effortless Simplicity</h3>
+					<h3 class="mb-4 text-xl font-bold text-white">{t('home.effortlessSimplicityTitle')}</h3>
 					<p class="">
-						Designed to be instantly clear and easy. No learning curve — just open, create, and go.
+						{t('home.effortlessSimplicityDescription')}
 					</p>
 				</div>
 			</div>
@@ -146,35 +138,38 @@
 	<!-- How It Works Section -->
 	<section class="py-20">
 		<div class="container mx-auto px-4">
-			<h2 class=" mb-16 text-center text-4xl font-bold">How It Works</h2>
+			<h2 class=" mb-16 text-center text-4xl font-bold">{t('home.howItWorksTitle')}</h2>
 
 			<div class="grid gap-8 md:grid-cols-3">
 				<!-- Step 1 -->
 				<div class="text-center">
 					<h3 class="mb-4 text-xl font-bold text-white">
-						<span class="text-violet-400">1.</span> Create Event
+						<span class="text-violet-400">1.</span>
+						{t('home.step1Title')}
 					</h3>
 					<p class="">
-						Fill out a simple form with event details. Choose between limited or unlimited capacity.
+						{t('home.step1Description')}
 					</p>
 				</div>
 
 				<!-- Step 2 -->
 				<div class="text-center">
 					<h3 class="mb-4 text-xl font-bold text-white">
-						<span class="text-violet-400">2.</span> Get Unique URL
+						<span class="text-violet-400">2.</span>
+						{t('home.step2Title')}
 					</h3>
 					<p class="">
-						Receive a random, memorable URL for your event. Perfect for sharing anywhere.
+						{t('home.step2Description')}
 					</p>
 				</div>
 
 				<!-- Step 3 -->
 				<div class="text-center">
 					<h3 class="mb-4 text-xl font-bold text-white">
-						<span class="text-violet-400">3.</span> Collect RSVPs
+						<span class="text-violet-400">3.</span>
+						{t('home.step3Title')}
 					</h3>
-					<p class="">People visit your link and join with just their name. No accounts needed.</p>
+					<p class="">{t('home.step3Description')}</p>
 				</div>
 			</div>
 		</div>
@@ -184,14 +179,14 @@
 	<section class="py-20">
 		<div class="container mx-auto px-4 text-center">
 			<h2 class="mb-6 text-4xl font-bold text-white">
-				Ready to Create Your <span class="text-violet-400">First Event</span>?
+				{t('home.ctaTitle')}
 			</h2>
-			<p class="mb-10 text-xl">Join thousands of event organizers who trust Cactoide</p>
+			<p class="mb-10 text-xl">{t('home.ctaDescription')}</p>
 			<button
 				on:click={() => goto('/create')}
 				class="rounded-sm border-2 border-violet-500 px-8 py-4 font-bold duration-400 hover:scale-110 hover:bg-violet-500/10"
 			>
-				Create
+				{t('home.ctaButton')}
 			</button>
 		</div>
 	</section>

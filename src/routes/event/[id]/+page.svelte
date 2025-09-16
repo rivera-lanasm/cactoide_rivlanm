@@ -6,6 +6,7 @@
 	import { formatTime, formatDate } from '$lib/dateHelpers.js';
 	import CalendarModal from '$lib/components/CalendarModal.svelte';
 	import type { CalendarEvent } from '$lib/calendarHelpers.js';
+	import { t } from '$lib/i18n/i18n.js';
 
 	export let data: { event: Event; rsvps: RSVP[]; userId: string };
 	export let form;
@@ -80,7 +81,7 @@
 </script>
 
 <svelte:head>
-	<title>{event?.name || 'Event'} - Cactoide</title>
+	<title>{event?.name || t('event.eventTitle')}</title>
 </svelte:head>
 
 <div class="flex min-h-screen flex-col">
@@ -91,13 +92,13 @@
 			<div class="mx-auto max-w-md text-center">
 				<div class="rounded-sm border border-red-500/30 bg-red-900/20 p-8">
 					<div class="mb-4 text-6xl text-red-400">⚠️</div>
-					<h2 class="mb-4 text-2xl font-bold text-red-400">Event Not Found</h2>
-					<p class="my-8">The event you're looking for doesn't exist or has been removed.</p>
+					<h2 class="mb-4 text-2xl font-bold text-red-400">{t('event.eventNotFoundTitle')}</h2>
+					<p class="my-8">{t('event.eventNotFoundDescription')}</p>
 					<button
 						on:click={() => goto('/create')}
 						class="border-white-500 bg-white-400/20 mt-2 rounded-sm border px-6 py-3 font-semibold text-white duration-400 hover:scale-110 hover:bg-white/10"
 					>
-						Create New Event
+						{t('common.createNewEvent')}
 					</button>
 				</div>
 			</div>
@@ -163,7 +164,7 @@
 										? 'border-amber-600 text-amber-600'
 										: 'border-teal-500 text-teal-500'}"
 								>
-									{event.type === 'limited' ? 'Limited' : 'Unlimited'}
+									{event.type === 'limited' ? t('common.limited') : t('common.unlimited')}
 								</span>
 								<span
 									class="rounded-sm border px-2 py-1 text-xs font-medium {event.visibility ===
@@ -171,13 +172,13 @@
 										? 'border-green-300 text-green-400'
 										: 'border-orange-300 text-orange-400'}"
 								>
-									{event.visibility === 'public' ? 'Public' : 'Private'}
+									{event.visibility === 'public' ? t('common.public') : t('common.private')}
 								</span>
 							</div>
 
 							{#if event.type === 'limited' && event.attendee_limit}
 								<div class="text-right">
-									<p class="text-sm">Capacity</p>
+									<p class="text-sm">{t('common.capacity')}</p>
 									<p class=" text-lg font-bold">
 										{rsvps.length}/{event.attendee_limit}
 									</p>
@@ -189,13 +190,13 @@
 
 				<!-- RSVP Form -->
 				<div class=" rounded-sm border p-6 shadow-2xl backdrop-blur-sm">
-					<h3 class=" mb-4 text-xl font-bold">Join This Event</h3>
+					<h3 class=" mb-4 text-xl font-bold">{t('event.joinThisEvent')}</h3>
 
 					{#if event.type === 'limited' && event.attendee_limit && rsvps.length >= event.attendee_limit}
 						<div class="py-6 text-center">
 							<div class="mb-3 text-4xl text-red-400">🚫</div>
-							<p class="font-semibold text-red-400">Event is Full!</p>
-							<p class="mt-1 text-sm">Maximum capacity reached</p>
+							<p class="font-semibold text-red-400">{t('event.eventIsFull')}</p>
+							<p class="mt-1 text-sm">{t('event.maximumCapacityReached')}</p>
 						</div>
 					{:else}
 						<form
@@ -217,7 +218,8 @@
 							<input type="hidden" name="userId" value={currentUserId} />
 							<div>
 								<label for="attendeeName" class=" mb-2 block text-sm font-semibold">
-									Your Name <span class="text-red-400">*</span>
+									{t('event.yourNameLabel')}
+									<span class="text-red-400">{t('common.required')}</span>
 								</label>
 								<input
 									id="attendeeName"
@@ -225,7 +227,7 @@
 									type="text"
 									bind:value={newAttendeeName}
 									class="border-dark-300 w-full rounded-sm border-2 px-4 py-3 text-slate-900 shadow-sm"
-									placeholder="Enter your name"
+									placeholder={t('event.yourNamePlaceholder')}
 									maxlength="50"
 									required
 								/>
@@ -240,7 +242,7 @@
 									class="h-4 w-4 rounded border-gray-300 text-violet-600 focus:ring-violet-500"
 								/>
 								<label for="addGuests" class="text-sm font-medium text-white">
-									Add guest users
+									{t('event.addGuestsLabel')}
 								</label>
 							</div>
 
@@ -248,7 +250,8 @@
 							{#if addGuests}
 								<div>
 									<label for="numberOfGuests" class="mb-2 block text-sm font-semibold">
-										Number of Guests <span class="text-red-400">*</span>
+										{t('event.numberOfGuestsLabel')}
+										<span class="text-red-400">{t('common.required')}</span>
 									</label>
 									<input
 										id="numberOfGuests"
@@ -258,12 +261,13 @@
 										min="1"
 										max="10"
 										class="border-dark-300 w-full rounded-sm border-2 px-4 py-3 text-slate-900 shadow-sm"
-										placeholder="Enter number of guests"
+										placeholder={t('event.numberOfGuestsPlaceholder')}
 										required
 									/>
 									<p class="mt-1 text-xs text-slate-400">
-										Guests will be added as "{newAttendeeName || 'Your Name'}'s Guest #1", "{newAttendeeName ||
-											'Your Name'}'s Guest #2", etc.
+										{t('event.guestsWillBeAddedAs', {
+											name: newAttendeeName || t('common.yourNamePlaceholder')
+										})}
 									</p>
 								</div>
 							{/if}
@@ -280,12 +284,15 @@
 										<div
 											class="mr-2 h-5 w-5 animate-spin rounded-full border-b-2 border-white"
 										></div>
-										Adding...
+										{t('event.adding')}
 									</div>
 								{:else if addGuests && numberOfGuests > 0}
-									Join Event + {numberOfGuests} Guest{numberOfGuests > 1 ? 's' : ''}
+									{t('event.joinEventWithGuests', {
+										count: numberOfGuests,
+										plural: numberOfGuests > 1 ? 's' : ''
+									})}
 								{:else}
-									Join Event
+									{t('event.joinEventButton')}
 								{/if}
 							</button>
 						</form>
@@ -295,14 +302,14 @@
 				<!-- Attendees List -->
 				<div class="rounded-sm border p-6 shadow-2xl backdrop-blur-sm">
 					<div class="mb-4 flex items-center justify-between">
-						<h3 class=" text-xl font-bold">Attendees</h3>
+						<h3 class=" text-xl font-bold">{t('event.attendeesTitle')}</h3>
 						<span class="text-2xl font-bold">{rsvps.length}</span>
 					</div>
 
 					{#if rsvps.length === 0}
 						<div class="text-dark-400 py-8 text-center">
-							<p>No attendees yet</p>
-							<p class="mt-1 text-sm">Be the first to join!</p>
+							<p>{t('event.noAttendeesYet')}</p>
+							<p class="mt-1 text-sm">{t('event.beFirstToJoin')}</p>
 						</div>
 					{:else}
 						<div class="space-y-3">
@@ -361,7 +368,7 @@
 											<button
 												type="submit"
 												class="text-dark-400 p-1 transition-colors duration-200 hover:text-red-400"
-												aria-label="Remove RSVP"
+												aria-label={t('event.removeRsvpAriaLabel')}
 											>
 												<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 													<path
@@ -386,13 +393,13 @@
 						on:click={copyEventLink}
 						class="hover:bg-violet-400/70' w-full rounded-sm border-2 border-violet-500 bg-violet-400/20 px-4 py-3 py-4 font-bold font-medium font-semibold text-white shadow-lg transition-all duration-200 hover:scale-105"
 					>
-						Copy Link
+						{t('event.copyLinkButton')}
 					</button>
 					<button
 						on:click={openCalendarModal}
 						class="hover:bg-violet-400/70' w-full rounded-sm border-2 border-violet-500 bg-violet-400/20 px-4 py-3 py-4 font-bold font-medium font-semibold text-white shadow-lg transition-all duration-200 hover:scale-105"
 					>
-						Add to Calendar
+						{t('event.addToCalendarButton')}
 					</button>
 				</div>
 			</div>
@@ -423,7 +430,7 @@
 		<div
 			class="fixed right-4 bottom-4 z-40 w-128 rounded-sm border border-yellow-500/30 bg-yellow-900/20 p-4 text-yellow-400"
 		>
-			Removed RSVP successfully.
+			{t('event.removedRsvpSuccessfully')}
 		</div>
 	{/if}
 {/if}

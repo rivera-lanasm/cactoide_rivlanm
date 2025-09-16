@@ -6,6 +6,7 @@
 		addToOutlookCalendar,
 		downloadICalFile
 	} from '../calendarHelpers.js';
+	import { t } from '$lib/i18n/i18n.js';
 
 	export let isOpen: boolean = false;
 	export let event: CalendarEvent;
@@ -66,11 +67,13 @@
 	>
 		<div class="mx-4 w-full max-w-md rounded-sm border border-white/20 bg-slate-900 p-6 shadow-2xl">
 			<div class="mb-6 flex items-center justify-between">
-				<h3 id="calendar-modal-title" class="text-xl font-bold text-white">Add to Calendar</h3>
+				<h3 id="calendar-modal-title" class="text-xl font-bold text-white">
+					{t('calendar.addToCalendarTitle')}
+				</h3>
 				<button
 					on:click={closeModal}
 					class="text-slate-400 transition-colors duration-200 hover:text-white"
-					aria-label="Close modal"
+					aria-label={t('common.closeModal')}
 				>
 					<svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 						<path
@@ -107,8 +110,8 @@
 							</svg>
 						</div>
 						<div>
-							<p class="font-semibold text-white">Google Calendar</p>
-							<p class="text-sm text-slate-400">Add to Google Calendar</p>
+							<p class="font-semibold text-white">{t('calendar.googleCalendarTitle')}</p>
+							<p class="text-sm text-slate-400">{t('calendar.googleCalendarDescription')}</p>
 						</div>
 					</div>
 				</button>
@@ -129,8 +132,8 @@
 							</svg>
 						</div>
 						<div>
-							<p class="font-semibold text-white">Microsoft Outlook</p>
-							<p class="text-sm text-slate-400">Add to Outlook Calendar</p>
+							<p class="font-semibold text-white">{t('calendar.microsoftOutlookTitle')}</p>
+							<p class="text-sm text-slate-400">{t('calendar.microsoftOutlookDescription')}</p>
 						</div>
 					</div>
 				</button>
@@ -156,8 +159,8 @@
 							</svg>
 						</div>
 						<div>
-							<p class="font-semibold text-white">Download iCal File</p>
-							<p class="text-sm text-slate-400">Download .ics file for any calendar app</p>
+							<p class="font-semibold text-white">{t('calendar.downloadICalTitle')}</p>
+							<p class="text-sm text-slate-400">{t('calendar.downloadICalDescription')}</p>
 						</div>
 					</div>
 				</button>
