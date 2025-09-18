@@ -21,6 +21,7 @@ A mobile-first event RSVP platform that lets you create events, share unique URL
 - **🎯 Instant Event Creation** - Create events in seconds with our streamlined form. No accounts, no waiting, just pure efficiency.
 - **🔗 One-Click Sharing** - Each event gets a unique, memorable URL. Share instantly via any platform or messaging app.
 - **🔍 All-in-One Clarity** - No more scrolling through endless chats and reactions. See everyone's availability and responses neatly in one place.
+- **📅 iCal Integration** - One-tap add-to-calendar via ICS/webcal links. Works with Apple Calendar, Google Calendar, and Outlook, with automatic time zone handling.
 - **👤 No Hassle, No Sign-Ups** - Skip registrations and endless forms. Unlike other event platforms, you create and share instantly — no accounts, no barriers.
 - **🛡️ Smart Limits** - Choose between unlimited RSVPs or set a limited capacity. Perfect for any event size.
 - **✨ Effortless Simplicity** - Designed to be instantly clear and easy. No learning curve — just open, create, and go.
@@ -29,7 +30,7 @@ A mobile-first event RSVP platform that lets you create events, share unique URL
 
 #### Requirements
 
-`git, docker, docker-compose, node at least suggested 20.19.0`
+`git`, `docker`, `docker-compose`, `node` at least suggested 20.19.0
 
 Uses the [`docker-compose.yml`](docker-compose.yml) file to setup the application with the database. You can define all ENV variables in the [`.env`](.env.example) file from the `.env.example`.
 
