@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
+	import { browser } from '$app/environment';
 	import type { Event, RSVP } from '$lib/types';
 	import { goto } from '$app/navigation';
 	import { enhance } from '$app/forms';
@@ -28,13 +29,13 @@
 	$: currentUserId = data.userId;
 
 	// Create calendar event object when event data changes
-	$: if (event) {
+	$: if (event && browser) {
 		calendarEvent = {
 			name: event.name,
 			date: event.date,
 			time: event.time,
 			location: event.location,
-			url: `${window.location.origin}/event/${eventId}`
+			url: `${$page.url.origin}/event/${eventId}`
 		};
 	}
 
@@ -56,13 +57,15 @@
 	const eventId = $page.params.id || '';
 
 	const copyEventLink = () => {
-		const url = `${window.location.origin}/event/${eventId}`;
-		navigator.clipboard.writeText(url).then(() => {
-			success = 'Event link copied to clipboard!';
-			setTimeout(() => {
-				success = '';
-			}, 3000);
-		});
+		if (browser) {
+			const url = `${$page.url.origin}/event/${eventId}`;
+			navigator.clipboard.writeText(url).then(() => {
+				success = 'Event link copied to clipboard!';
+				setTimeout(() => {
+					success = '';
+				}, 3000);
+			});
+		}
 	};
 
 	const clearMessages = () => {
@@ -408,12 +411,12 @@
 </div>
 
 <!-- Calendar Modal -->
-{#if calendarEvent}
+{#if calendarEvent && browser}
 	<CalendarModal
 		bind:isOpen={showCalendarModal}
 		event={calendarEvent}
 		{eventId}
-		baseUrl={window.location.origin}
+		baseUrl={$page.url.origin}
 		on:close={closeCalendarModal}
 	/>
 {/if}
