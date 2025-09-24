@@ -19,6 +19,8 @@ export const load: PageServerLoad = async () => {
 			date: event.date, // Already in 'YYYY-MM-DD' format
 			time: event.time, // Already in 'HH:MM:SS' format
 			location: event.location,
+			location_type: event.locationType,
+			location_url: event.locationUrl,
 			type: event.type,
 			attendee_limit: event.attendeeLimit, // Note: schema uses camelCase
 			visibility: event.visibility,

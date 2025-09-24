@@ -17,6 +17,7 @@ import type { InferInsertModel, InferSelectModel } from 'drizzle-orm';
 // --- Enums (matching the SQL CHECK constraints)
 export const eventTypeEnum = pgEnum('event_type', ['limited', 'unlimited']);
 export const visibilityEnum = pgEnum('visibility', ['public', 'private']);
+export const locationTypeEnum = pgEnum('location_type', ['text', 'maps']);
 
 // --- Events table
 export const events = pgTable(
@@ -27,6 +28,8 @@ export const events = pgTable(
 		date: date('date', { mode: 'string' }).notNull(), // ISO 'YYYY-MM-DD'
 		time: time('time', { withTimezone: false }).notNull(), // 'HH:MM:SS'
 		location: varchar('location', { length: 200 }).notNull(),
+		locationType: locationTypeEnum('location_type').notNull().default('text'),
+		locationUrl: varchar('location_url', { length: 500 }),
 		type: eventTypeEnum('type').notNull(),
 		attendeeLimit: integer('attendee_limit'), // nullable in SQL
 		userId: varchar('user_id', { length: 100 }).notNull(),

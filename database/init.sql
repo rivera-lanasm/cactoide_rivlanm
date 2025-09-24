@@ -14,6 +14,8 @@ CREATE TABLE IF NOT EXISTS events (
     date            DATE NOT NULL,
     time            TIME NOT NULL,
     location        VARCHAR(200) NOT NULL,
+    location_type   VARCHAR(20) NOT NULL DEFAULT 'text' CHECK (location_type IN ('text','maps')),
+    location_url    VARCHAR(500),
     type            VARCHAR(20) NOT NULL CHECK (type IN ('limited','unlimited')),
     attendee_limit  INTEGER CHECK (attendee_limit > 0),
     user_id         VARCHAR(100) NOT NULL,
@@ -37,6 +39,7 @@ CREATE TABLE IF NOT EXISTS rsvps (
 -- =======================================
 CREATE INDEX IF NOT EXISTS idx_events_user_id  ON events(user_id);
 CREATE INDEX IF NOT EXISTS idx_events_date     ON events(date);
+CREATE INDEX IF NOT EXISTS idx_events_location_type ON events(location_type);
 CREATE INDEX IF NOT EXISTS idx_rsvps_event_id  ON rsvps(event_id);
 CREATE INDEX IF NOT EXISTS idx_rsvps_user_id   ON rsvps(user_id);
 

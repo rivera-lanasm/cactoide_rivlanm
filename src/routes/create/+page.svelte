@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { CreateEventData, EventType } from '$lib/types';
+	import type { CreateEventData, EventType, LocationType } from '$lib/types';
 	import { enhance } from '$app/forms';
 	import { goto } from '$app/navigation';
 	import { t } from '$lib/i18n/i18n.js';
@@ -11,6 +11,8 @@
 		date: '',
 		time: '',
 		location: '',
+		location_type: 'text',
+		location_url: '',
 		type: 'unlimited',
 		attendee_limit: undefined,
 		visibility: 'public'
@@ -43,6 +45,16 @@
 		eventData.type = type;
 		if (type === 'unlimited') {
 			eventData.attendee_limit = undefined;
+		}
+	};
+
+	const handleLocationTypeChange = (locationType: LocationType) => {
+		eventData.location_type = locationType;
+		if (locationType === 'text') {
+			eventData.location_url = '';
+			eventData.location = '';
+		} else {
+			eventData.location = 'Google Maps';
 		}
 	};
 
@@ -83,6 +95,7 @@
 					<input type="hidden" name="userId" value={currentUserId} />
 					<input type="hidden" name="type" value={eventData.type} />
 					<input type="hidden" name="visibility" value={eventData.visibility} />
+					<input type="hidden" name="location_type" value={eventData.location_type} />
 
 					{#if errors.server}
 						<div class="mb-6 rounded-sm border border-red-200 bg-red-50 p-4 text-red-700">
@@ -148,54 +161,112 @@
 						</div>
 					</div>
 
-					<!-- Location -->
+					<!-- Location Type -->
+					<div>
+						<fieldset>
+							<legend class="text-dark-800 mb-3 block text-sm font-semibold">
+								{t('create.locationTypeLabel')}
+								<span class="text-red-400">{t('common.required')}</span>
+							</legend>
+							<div class="grid grid-cols-2 gap-3">
+								<button
+									type="button"
+									class="rounded-sm border-2 px-4 py-3 font-medium transition-all duration-200 {eventData.location_type ===
+									'text'
+										? ' border-violet-500 bg-violet-400/20 font-semibold hover:bg-violet-400/70'
+										: 'border-dark-300 text-dark-700'}"
+									on:click={() => handleLocationTypeChange('text')}
+								>
+									{t('create.locationTextOption')}
+								</button>
+								<button
+									type="button"
+									class="rounded-sm border-2 px-4 py-3 font-medium transition-all duration-200 {eventData.location_type ===
+									'maps'
+										? ' border-violet-500 bg-violet-400/20 font-semibold hover:bg-violet-400/70'
+										: 'border-dark-300 text-dark-700 bg-gray-600/20 hover:bg-gray-600/70'}"
+									on:click={() => handleLocationTypeChange('maps')}
+								>
+									{t('create.locationMapsOption')}
+								</button>
+							</div>
+							<p class="mt-2 text-xs text-slate-400">
+								{eventData.location_type === 'text'
+									? t('create.locationTextDescription')
+									: t('create.locationMapsDescription')}
+							</p>
+						</fieldset>
+					</div>
+
+					<!-- Location Input -->
 					<div>
 						<label for="location" class="text-dark-800 mb-3 block text-sm font-semibold">
-							{t('create.locationLabel')} <span class="text-red-400">{t('common.required')}</span>
+							{eventData.location_type === 'text'
+								? t('create.locationLabel')
+								: t('create.googleMapsUrlLabel')}
+							<span class="text-red-400">{t('common.required')}</span>
 						</label>
-						<input
-							id="location"
-							name="location"
-							type="text"
-							bind:value={eventData.location}
-							class="border-dark-300 placeholder-dark-500 w-full rounded-sm border-2 px-4 py-3 text-slate-900 shadow-sm transition-all"
-							placeholder={t('create.locationPlaceholder')}
-							maxlength="200"
-							required
-						/>
+						{#if eventData.location_type === 'text'}
+							<input
+								id="location"
+								name="location"
+								type="text"
+								bind:value={eventData.location}
+								class="border-dark-300 placeholder-dark-500 w-full rounded-sm border-2 px-4 py-3 text-slate-900 shadow-sm transition-all"
+								placeholder={t('create.locationPlaceholder')}
+								maxlength="200"
+								required
+							/>
+						{:else}
+							<input
+								id="location_url"
+								name="location_url"
+								type="url"
+								bind:value={eventData.location_url}
+								class="border-dark-300 placeholder-dark-500 w-full rounded-sm border-2 px-4 py-3 text-slate-900 shadow-sm transition-all"
+								placeholder={t('create.googleMapsUrlPlaceholder')}
+								maxlength="500"
+								required
+							/>
+						{/if}
 						{#if errors.location}
 							<p class="mt-2 text-sm font-medium text-red-600">{errors.location}</p>
+						{/if}
+						{#if errors.location_url}
+							<p class="mt-2 text-sm font-medium text-red-600">{errors.location_url}</p>
 						{/if}
 					</div>
 
 					<!-- Event Type -->
 					<div>
-						<label class="text-dark-800 mb-3 block text-sm font-semibold">
-							{t('create.typeLabel')}
-							<span class="text-red-400">{t('common.required')}</span></label
-						>
-						<div class="grid grid-cols-2 gap-3">
-							<button
-								type="button"
-								class="rounded-sm border-2 px-4 py-3 font-medium transition-all duration-200 {eventData.type ===
-								'unlimited'
-									? ' border-violet-500 bg-violet-400/20 font-semibold hover:bg-violet-400/70'
-									: 'border-dark-300 text-dark-700'}"
-								on:click={() => handleTypeChange('unlimited')}
-							>
-								{t('create.unlimitedOption')}
-							</button>
-							<button
-								type="button"
-								class="rounded-sm border-2 px-4 py-3 font-medium transition-all duration-200 {eventData.type ===
-								'limited'
-									? ' border-violet-500 bg-violet-400/20 font-semibold hover:bg-violet-400/70'
-									: 'border-dark-300 text-dark-700 bg-gray-600/20 hover:bg-gray-600/70'}"
-								on:click={() => handleTypeChange('limited')}
-							>
-								{t('create.limitedOption')}
-							</button>
-						</div>
+						<fieldset>
+							<legend class="text-dark-800 mb-3 block text-sm font-semibold">
+								{t('create.typeLabel')}
+								<span class="text-red-400">{t('common.required')}</span>
+							</legend>
+							<div class="grid grid-cols-2 gap-3">
+								<button
+									type="button"
+									class="rounded-sm border-2 px-4 py-3 font-medium transition-all duration-200 {eventData.type ===
+									'unlimited'
+										? ' border-violet-500 bg-violet-400/20 font-semibold hover:bg-violet-400/70'
+										: 'border-dark-300 text-dark-700'}"
+									on:click={() => handleTypeChange('unlimited')}
+								>
+									{t('create.unlimitedOption')}
+								</button>
+								<button
+									type="button"
+									class="rounded-sm border-2 px-4 py-3 font-medium transition-all duration-200 {eventData.type ===
+									'limited'
+										? ' border-violet-500 bg-violet-400/20 font-semibold hover:bg-violet-400/70'
+										: 'border-dark-300 text-dark-700 bg-gray-600/20 hover:bg-gray-600/70'}"
+									on:click={() => handleTypeChange('limited')}
+								>
+									{t('create.limitedOption')}
+								</button>
+							</div>
+						</fieldset>
 					</div>
 
 					<!-- Limit (only for limited events) -->
@@ -224,37 +295,39 @@
 
 					<!-- Event Visibility -->
 					<div>
-						<label class="text-dark-800 mb-3 block text-sm font-semibold">
-							{t('create.visibilityLabel')}
-							<span class="text-red-400">{t('common.required')}</span></label
-						>
-						<div class="grid grid-cols-2 gap-3">
-							<button
-								type="button"
-								class="rounded-sm border-2 px-4 py-3 font-medium transition-all duration-200 {eventData.visibility ===
-								'public'
-									? ' border-violet-500 bg-violet-400/20 font-semibold hover:bg-violet-400/70'
-									: 'border-dark-300 text-dark-700'}"
-								on:click={() => (eventData.visibility = 'public')}
-							>
-								{t('create.publicOption')}
-							</button>
-							<button
-								type="button"
-								class="rounded-sm border-2 px-4 py-3 font-medium transition-all duration-200 {eventData.visibility ===
-								'private'
-									? ' border-violet-500 bg-violet-400/20 font-semibold hover:bg-violet-400/70'
-									: 'border-dark-300 text-dark-700 bg-gray-600/20 hover:bg-gray-600/70'}"
-								on:click={() => (eventData.visibility = 'private')}
-							>
-								{t('create.privateOption')}
-							</button>
-						</div>
-						<p class="mt-2 text-xs text-slate-400">
-							{eventData.visibility === 'public'
-								? t('create.publicDescription')
-								: t('create.privateDescription')}
-						</p>
+						<fieldset>
+							<legend class="text-dark-800 mb-3 block text-sm font-semibold">
+								{t('create.visibilityLabel')}
+								<span class="text-red-400">{t('common.required')}</span>
+							</legend>
+							<div class="grid grid-cols-2 gap-3">
+								<button
+									type="button"
+									class="rounded-sm border-2 px-4 py-3 font-medium transition-all duration-200 {eventData.visibility ===
+									'public'
+										? ' border-violet-500 bg-violet-400/20 font-semibold hover:bg-violet-400/70'
+										: 'border-dark-300 text-dark-700'}"
+									on:click={() => (eventData.visibility = 'public')}
+								>
+									{t('create.publicOption')}
+								</button>
+								<button
+									type="button"
+									class="rounded-sm border-2 px-4 py-3 font-medium transition-all duration-200 {eventData.visibility ===
+									'private'
+										? ' border-violet-500 bg-violet-400/20 font-semibold hover:bg-violet-400/70'
+										: 'border-dark-300 text-dark-700 bg-gray-600/20 hover:bg-gray-600/70'}"
+									on:click={() => (eventData.visibility = 'private')}
+								>
+									{t('create.privateOption')}
+								</button>
+							</div>
+							<p class="mt-2 text-xs text-slate-400">
+								{eventData.visibility === 'public'
+									? t('create.publicDescription')
+									: t('create.privateDescription')}
+							</p>
+						</fieldset>
 					</div>
 
 					<div class="flex space-x-3">
