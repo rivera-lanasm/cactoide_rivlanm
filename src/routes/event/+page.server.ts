@@ -24,6 +24,8 @@ export const load = async ({ cookies }) => {
 			date: event.date,
 			time: event.time,
 			location: event.location,
+			location_type: event.locationType,
+			location_url: event.locationUrl,
 			type: event.type,
 			attendee_limit: event.attendeeLimit,
 			visibility: event.visibility,

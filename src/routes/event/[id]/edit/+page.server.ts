@@ -53,6 +53,8 @@ export const actions: Actions = {
 		const date = formData.get('date') as string;
 		const time = formData.get('time') as string;
 		const location = formData.get('location') as string;
+		const locationType = formData.get('location_type') as 'text' | 'maps';
+		const locationUrl = formData.get('location_url') as string;
 		const type = formData.get('type') as 'limited' | 'unlimited';
 		const attendeeLimit = formData.get('attendee_limit') as string;
 		const visibility = formData.get('visibility') as 'public' | 'private';
@@ -64,6 +66,8 @@ export const actions: Actions = {
 		if (!date) missingFields.push('date');
 		if (!time) missingFields.push('time');
 		if (!location?.trim()) missingFields.push('location');
+		if (!locationType) missingFields.push('location_type');
+		if (locationType === 'maps' && !locationUrl?.trim()) missingFields.push('location_url');
 
 		if (missingFields.length > 0) {
 			return fail(400, {
@@ -73,6 +77,8 @@ export const actions: Actions = {
 					date,
 					time,
 					location,
+					location_type: locationType,
+					location_url: locationUrl,
 					type,
 					attendee_limit: attendeeLimit,
 					visibility
@@ -88,14 +94,34 @@ export const actions: Actions = {
 		if (eventDate < today) {
 			return fail(400, {
 				error: 'Date cannot be in the past.',
-				values: { name, date, time, location, type, attendee_limit: attendeeLimit, visibility }
+				values: {
+					name,
+					date,
+					time,
+					location,
+					location_type: locationType,
+					location_url: locationUrl,
+					type,
+					attendee_limit: attendeeLimit,
+					visibility
+				}
 			});
 		}
 
 		if (type === 'limited' && (!attendeeLimit || parseInt(attendeeLimit) < 2)) {
 			return fail(400, {
 				error: 'Limit must be at least 2 for limited events.',
-				values: { name, date, time, location, type, attendee_limit: attendeeLimit, visibility }
+				values: {
+					name,
+					date,
+					time,
+					location,
+					location_type: locationType,
+					location_url: locationUrl,
+					type,
+					attendee_limit: attendeeLimit,
+					visibility
+				}
 			});
 		}
 
@@ -107,6 +133,8 @@ export const actions: Actions = {
 				date: date,
 				time: time,
 				location: location.trim(),
+				locationType: locationType,
+				locationUrl: locationType === 'maps' ? locationUrl?.trim() : null,
 				type: type,
 				attendeeLimit: type === 'limited' ? parseInt(attendeeLimit) : null,
 				visibility: visibility,

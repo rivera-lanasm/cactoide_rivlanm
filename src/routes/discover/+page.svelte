@@ -289,7 +289,18 @@
 												d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
 											></path>
 										</svg>
-										<span>{event.location}</span>
+										{#if event.location_type === 'maps' && event.location_url}
+											<a
+												href={event.location_url}
+												target="_blank"
+												rel="noopener noreferrer"
+												class="text-slate-500 transition-colors duration-200 hover:text-slate-300"
+											>
+												{event.location}
+											</a>
+										{:else}
+											<span>{event.location}</span>
+										{/if}
 									</div>
 									<div class="flex items-center space-x-2">
 										<span

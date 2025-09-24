@@ -155,7 +155,18 @@
 								</svg>
 							</div>
 							<div>
-								<p class="font-semibold text-white">{event.location}</p>
+								{#if event.location_type === 'maps' && event.location_url}
+									<a
+										href={event.location_url}
+										target="_blank"
+										rel="noopener noreferrer"
+										class="font-semibold text-white transition-colors duration-200 hover:text-violet-300"
+									>
+										{event.location}
+									</a>
+								{:else}
+									<p class="font-semibold text-white">{event.location}</p>
+								{/if}
 							</div>
 						</div>
 

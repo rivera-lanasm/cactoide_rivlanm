@@ -1,6 +1,7 @@
 export type EventType = 'limited' | 'unlimited';
 export type EventVisibility = 'public' | 'private';
 export type ActionType = 'add' | 'remove';
+export type LocationType = 'text' | 'maps';
 
 export interface Event {
 	id: string;
@@ -8,6 +9,8 @@ export interface Event {
 	date: string;
 	time: string;
 	location: string;
+	location_type: LocationType;
+	location_url?: string;
 	type: EventType;
 	attendee_limit?: number;
 	visibility: EventVisibility;
@@ -29,6 +32,8 @@ export interface CreateEventData {
 	date: string;
 	time: string;
 	location: string;
+	location_type: LocationType;
+	location_url?: string;
 	type: EventType;
 	attendee_limit?: number;
 	visibility: EventVisibility;
@@ -40,6 +45,8 @@ export interface DatabaseEvent {
 	date: string;
 	time: string;
 	location: string;
+	location_type: LocationType;
+	location_url?: string;
 	type: EventType;
 	attendee_limit?: number;
 	visibility: EventVisibility;

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { EventType } from '$lib/types';
+	import type { EventType, LocationType } from '$lib/types';
 	import { enhance } from '$app/forms';
 	import { goto } from '$app/navigation';
 	import { t } from '$lib/i18n/i18n.js';
@@ -12,6 +12,8 @@
 		date: data.event.date,
 		time: data.event.time,
 		location: data.event.location,
+		location_type: data.event.locationType || 'text',
+		location_url: data.event.locationUrl || '',
 		type: data.event.type,
 		attendee_limit: data.event.attendeeLimit,
 		visibility: data.event.visibility
@@ -46,6 +48,16 @@
 		eventData.type = type;
 		if (type === 'unlimited') {
 			eventData.attendee_limit = null;
+		}
+	};
+
+	const handleLocationTypeChange = (locationType: LocationType) => {
+		eventData.location_type = locationType;
+		if (locationType === 'text') {
+			eventData.location_url = '';
+			eventData.location = '';
+		} else {
+			eventData.location = 'Google Maps';
 		}
 	};
 
@@ -86,9 +98,6 @@
 					}}
 					class="space-y-6"
 				>
-					<input type="hidden" name="type" value={eventData.type} />
-					<input type="hidden" name="visibility" value={eventData.visibility} />
-
 					{#if errors.server}
 						<div class="mb-6 rounded-sm border border-red-200 bg-red-50 p-4 text-red-700">
 							{errors.server}
@@ -153,23 +162,79 @@
 						</div>
 					</div>
 
-					<!-- Location -->
+					<!-- Location Type -->
+					<div>
+						<fieldset>
+							<legend class="text-dark-800 mb-3 block text-sm font-semibold">
+								{t('create.locationTypeLabel')}
+								<span class="text-red-400">{t('common.required')}</span>
+							</legend>
+							<div class="grid grid-cols-2 gap-3">
+								<button
+									type="button"
+									class="rounded-sm border-2 px-4 py-3 font-medium transition-all duration-200 {eventData.location_type ===
+									'text'
+										? ' border-violet-500 bg-violet-400/20 font-semibold hover:bg-violet-400/70'
+										: 'border-dark-300 text-dark-700'}"
+									on:click={() => handleLocationTypeChange('text')}
+								>
+									{t('create.locationTextOption')}
+								</button>
+								<button
+									type="button"
+									class="rounded-sm border-2 px-4 py-3 font-medium transition-all duration-200 {eventData.location_type ===
+									'maps'
+										? ' border-violet-500 bg-violet-400/20 font-semibold hover:bg-violet-400/70'
+										: 'border-dark-300 text-dark-700 bg-gray-600/20 hover:bg-gray-600/70'}"
+									on:click={() => handleLocationTypeChange('maps')}
+								>
+									{t('create.locationMapsOption')}
+								</button>
+							</div>
+							<p class="mt-2 text-xs text-slate-400">
+								{eventData.location_type === 'text'
+									? t('create.locationTextDescription')
+									: t('create.locationMapsDescription')}
+							</p>
+						</fieldset>
+					</div>
+
+					<!-- Location Input -->
 					<div>
 						<label for="location" class="text-dark-800 mb-3 block text-sm font-semibold">
-							{t('common.location')} <span class="text-red-400">{t('common.required')}</span>
+							{eventData.location_type === 'text'
+								? t('create.locationTypeLabel')
+								: t('create.googleMapsUrlLabel')}
+							<span class="text-red-400">{t('common.required')}</span>
 						</label>
-						<input
-							id="location"
-							name="location"
-							type="text"
-							bind:value={eventData.location}
-							class="border-dark-300 placeholder-dark-500 w-full rounded-sm border-2 px-4 py-3 text-slate-900 shadow-sm transition-all"
-							placeholder={t('common.enterLocation')}
-							maxlength="200"
-							required
-						/>
+						{#if eventData.location_type === 'text'}
+							<input
+								id="location"
+								name="location"
+								type="text"
+								bind:value={eventData.location}
+								class="border-dark-300 placeholder-dark-500 w-full rounded-sm border-2 px-4 py-3 text-slate-900 shadow-sm transition-all"
+								placeholder={t('create.locationPlaceholder')}
+								maxlength="200"
+								required
+							/>
+						{:else}
+							<input
+								id="location_url"
+								name="location_url"
+								type="url"
+								bind:value={eventData.location_url}
+								class="border-dark-300 placeholder-dark-500 w-full rounded-sm border-2 px-4 py-3 text-slate-900 shadow-sm transition-all"
+								placeholder={t('create.googleMapsUrlPlaceholder')}
+								maxlength="500"
+								required
+							/>
+						{/if}
 						{#if errors.location}
 							<p class="mt-2 text-sm font-medium text-red-600">{errors.location}</p>
+						{/if}
+						{#if errors.location_url}
+							<p class="mt-2 text-sm font-medium text-red-600">{errors.location_url}</p>
 						{/if}
 					</div>
 
