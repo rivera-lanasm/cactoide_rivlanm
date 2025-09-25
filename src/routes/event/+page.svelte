@@ -126,14 +126,16 @@
 												d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
 											></path>
 										</svg>
-										{#if event.location_type === 'maps' && event.location_url}
+										{#if event.location_type === 'none'}
+											<span>N/A</span>
+										{:else if event.location_type === 'maps' && event.location_url}
 											<a
 												href={event.location_url}
 												target="_blank"
 												rel="noopener noreferrer"
 												class="text-slate-500 transition-colors duration-200 hover:text-slate-300"
 											>
-												{event.location}
+												Google Maps
 											</a>
 										{:else}
 											<span>{event.location}</span>

@@ -1,7 +1,7 @@
 export type EventType = 'limited' | 'unlimited';
 export type EventVisibility = 'public' | 'private';
 export type ActionType = 'add' | 'remove';
-export type LocationType = 'text' | 'maps';
+export type LocationType = 'none' | 'text' | 'maps';
 
 export interface Event {
 	id: string;

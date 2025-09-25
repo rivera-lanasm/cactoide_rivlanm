@@ -106,7 +106,7 @@
 				</div>
 			</div>
 		{:else if event}
-			<div class="mx-auto max-w-md space-y-6">
+			<div class="mx-auto max-w-2xl space-y-6">
 				<!-- Event Details Card -->
 
 				<div class="rounded-sm border p-6 shadow-2xl">
@@ -136,7 +136,7 @@
 							</div>
 						</div>
 
-						<!-- Location -->
+						<!-- Location (only show when not 'none') -->
 						<div class="flex items-center space-x-3 text-violet-400">
 							<div class="flex h-8 w-8 items-center justify-center rounded-sm">
 								<svg class=" h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -155,14 +155,16 @@
 								</svg>
 							</div>
 							<div>
-								{#if event.location_type === 'maps' && event.location_url}
+								{#if event.location_type === 'none'}
+									<p class="font-semibold text-white">N/A</p>
+								{:else if event.location_type === 'maps' && event.location_url}
 									<a
 										href={event.location_url}
 										target="_blank"
 										rel="noopener noreferrer"
 										class="font-semibold text-white transition-colors duration-200 hover:text-violet-300"
 									>
-										{event.location}
+										{t('create.locationMapsOption')}
 									</a>
 								{:else}
 									<p class="font-semibold text-white">{event.location}</p>
