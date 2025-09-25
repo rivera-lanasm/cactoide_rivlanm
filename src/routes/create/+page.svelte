@@ -11,7 +11,7 @@
 		date: '',
 		time: '',
 		location: '',
-		location_type: 'text',
+		location_type: 'none',
 		location_url: '',
 		type: 'unlimited',
 		attendee_limit: undefined,
@@ -50,7 +50,10 @@
 
 	const handleLocationTypeChange = (locationType: LocationType) => {
 		eventData.location_type = locationType;
-		if (locationType === 'text') {
+		if (locationType === 'none') {
+			eventData.location = '';
+			eventData.location_url = '';
+		} else if (locationType === 'text') {
 			eventData.location_url = '';
 			eventData.location = '';
 		} else {
@@ -70,7 +73,7 @@
 <div class="flex min-h-screen flex-col">
 	<!-- Main Content -->
 	<div class="container mx-auto flex-1 px-4 py-8">
-		<div class="mx-auto max-w-md">
+		<div class="mx-auto max-w-2xl">
 			<!-- Event Creation Form -->
 			<div class="rounded-sm border p-8">
 				<h2 class="mb-8 text-center text-3xl font-bold text-violet-400">{t('create.formTitle')}</h2>
@@ -168,7 +171,17 @@
 								{t('create.locationTypeLabel')}
 								<span class="text-red-400">{t('common.required')}</span>
 							</legend>
-							<div class="grid grid-cols-2 gap-3">
+							<div class="grid grid-cols-3 gap-3">
+								<button
+									type="button"
+									class="rounded-sm border-2 px-4 py-3 font-medium transition-all duration-200 {eventData.location_type ===
+									'none'
+										? ' border-violet-500 bg-violet-400/20 font-semibold hover:bg-violet-400/70'
+										: 'border-dark-300 text-dark-700'}"
+									on:click={() => handleLocationTypeChange('none')}
+								>
+									{t('create.locationNoneOption')}
+								</button>
 								<button
 									type="button"
 									class="rounded-sm border-2 px-4 py-3 font-medium transition-all duration-200 {eventData.location_type ===
@@ -190,52 +203,56 @@
 									{t('create.locationMapsOption')}
 								</button>
 							</div>
-							<p class="mt-2 text-xs text-slate-400">
-								{eventData.location_type === 'text'
-									? t('create.locationTextDescription')
-									: t('create.locationMapsDescription')}
+							<p class="mt-2 text-xs text-slate-400 italic">
+								{eventData.location_type === 'none'
+									? t('create.locationNoneDescription')
+									: eventData.location_type === 'text'
+										? t('create.locationTextDescription')
+										: t('create.locationMapsDescription')}
 							</p>
 						</fieldset>
 					</div>
 
-					<!-- Location Input -->
-					<div>
-						<label for="location" class="text-dark-800 mb-3 block text-sm font-semibold">
-							{eventData.location_type === 'text'
-								? t('create.locationLabel')
-								: t('create.googleMapsUrlLabel')}
-							<span class="text-red-400">{t('common.required')}</span>
-						</label>
-						{#if eventData.location_type === 'text'}
-							<input
-								id="location"
-								name="location"
-								type="text"
-								bind:value={eventData.location}
-								class="border-dark-300 placeholder-dark-500 w-full rounded-sm border-2 px-4 py-3 text-slate-900 shadow-sm transition-all"
-								placeholder={t('create.locationPlaceholder')}
-								maxlength="200"
-								required
-							/>
-						{:else}
-							<input
-								id="location_url"
-								name="location_url"
-								type="url"
-								bind:value={eventData.location_url}
-								class="border-dark-300 placeholder-dark-500 w-full rounded-sm border-2 px-4 py-3 text-slate-900 shadow-sm transition-all"
-								placeholder={t('create.googleMapsUrlPlaceholder')}
-								maxlength="500"
-								required
-							/>
-						{/if}
-						{#if errors.location}
-							<p class="mt-2 text-sm font-medium text-red-600">{errors.location}</p>
-						{/if}
-						{#if errors.location_url}
-							<p class="mt-2 text-sm font-medium text-red-600">{errors.location_url}</p>
-						{/if}
-					</div>
+					<!-- Location Input (only show when not 'none') -->
+					{#if eventData.location_type !== 'none'}
+						<div>
+							<label for="location" class="text-dark-800 mb-3 block text-sm font-semibold">
+								{eventData.location_type === 'text'
+									? t('create.locationLabel')
+									: t('create.googleMapsUrlLabel')}
+								<span class="text-red-400">{t('common.required')}</span>
+							</label>
+							{#if eventData.location_type === 'text'}
+								<input
+									id="location"
+									name="location"
+									type="text"
+									bind:value={eventData.location}
+									class="border-dark-300 placeholder-dark-500 w-full rounded-sm border-2 px-4 py-3 text-slate-900 shadow-sm transition-all"
+									placeholder={t('create.locationPlaceholder')}
+									maxlength="200"
+									required
+								/>
+							{:else}
+								<input
+									id="location_url"
+									name="location_url"
+									type="url"
+									bind:value={eventData.location_url}
+									class="border-dark-300 placeholder-dark-500 w-full rounded-sm border-2 px-4 py-3 text-slate-900 shadow-sm transition-all"
+									placeholder={t('create.googleMapsUrlPlaceholder')}
+									maxlength="500"
+									required
+								/>
+							{/if}
+							{#if errors.location}
+								<p class="mt-2 text-sm font-medium text-red-600">{errors.location}</p>
+							{/if}
+							{#if errors.location_url}
+								<p class="mt-2 text-sm font-medium text-red-600">{errors.location_url}</p>
+							{/if}
+						</div>
+					{/if}
 
 					<!-- Event Type -->
 					<div>
@@ -274,7 +291,7 @@
 						<div>
 							<label for="limit" class="text-dark-800 mb-3 block text-sm font-semibold">
 								{t('create.attendeeLimitLabel')}
-								{t('common.required')}
+								<span class="text-red-400">{t('common.required')}</span>
 							</label>
 							<input
 								id="attendee_limit"
@@ -322,7 +339,7 @@
 									{t('create.privateOption')}
 								</button>
 							</div>
-							<p class="mt-2 text-xs text-slate-400">
+							<p class="mt-2 text-xs text-slate-400 italic">
 								{eventData.visibility === 'public'
 									? t('create.publicDescription')
 									: t('create.privateDescription')}
@@ -342,7 +359,7 @@
 						<button
 							type="submit"
 							disabled={isSubmitting}
-							class="hover:bg-violet-400/70'l rounded-sm border-2 border-violet-500 bg-violet-400/20 px-4 py-3 py-4 font-bold font-medium font-semibold text-white shadow-lg transition-all duration-200 hover:scale-105"
+							class="hover:bg-violet-400/70'l flex-2 rounded-sm border-2 border-violet-500 bg-violet-400/20 px-4 py-3 py-4 font-bold font-medium font-semibold text-white shadow-lg transition-all duration-200 hover:scale-105"
 						>
 							{#if isSubmitting}
 								<div class="flex items-center justify-center">

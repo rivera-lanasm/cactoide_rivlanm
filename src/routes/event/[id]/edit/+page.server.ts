@@ -53,7 +53,7 @@ export const actions: Actions = {
 		const date = formData.get('date') as string;
 		const time = formData.get('time') as string;
 		const location = formData.get('location') as string;
-		const locationType = formData.get('location_type') as 'text' | 'maps';
+		const locationType = formData.get('location_type') as 'none' | 'text' | 'maps';
 		const locationUrl = formData.get('location_url') as string;
 		const type = formData.get('type') as 'limited' | 'unlimited';
 		const attendeeLimit = formData.get('attendee_limit') as string;
@@ -65,8 +65,8 @@ export const actions: Actions = {
 		if (!name?.trim()) missingFields.push('name');
 		if (!date) missingFields.push('date');
 		if (!time) missingFields.push('time');
-		if (!location?.trim()) missingFields.push('location');
 		if (!locationType) missingFields.push('location_type');
+		if (locationType === 'text' && !location?.trim()) missingFields.push('location');
 		if (locationType === 'maps' && !locationUrl?.trim()) missingFields.push('location_url');
 
 		if (missingFields.length > 0) {
@@ -132,7 +132,7 @@ export const actions: Actions = {
 				name: name.trim(),
 				date: date,
 				time: time,
-				location: location.trim(),
+				location: location?.trim() || '',
 				locationType: locationType,
 				locationUrl: locationType === 'maps' ? locationUrl?.trim() : null,
 				type: type,

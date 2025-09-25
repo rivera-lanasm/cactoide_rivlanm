@@ -25,7 +25,7 @@
 			<h2 class="mt-6 pt-8 text-xl md:text-2xl">
 				{t('home.whyCactoideTitle')}<span class="text-violet-400"
 					><a href="https://en.wikipedia.org/wiki/Cactoideae" target="_blank">*</a></span
-				>?🌵
+				>
 			</h2>
 			<p class="mt-4 text-lg md:text-xl">
 				{t('home.whyCactoideDescription')}

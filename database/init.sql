@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS events (
     date            DATE NOT NULL,
     time            TIME NOT NULL,
     location        VARCHAR(200) NOT NULL,
-    location_type   VARCHAR(20) NOT NULL DEFAULT 'text' CHECK (location_type IN ('text','maps')),
+    location_type   VARCHAR(20) NOT NULL DEFAULT 'none' CHECK (location_type IN ('none','text','maps')),
     location_url    VARCHAR(500),
     type            VARCHAR(20) NOT NULL CHECK (type IN ('limited','unlimited')),
     attendee_limit  INTEGER CHECK (attendee_limit > 0),
