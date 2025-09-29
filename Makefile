@@ -1,4 +1,4 @@
-.PHONY: help build up db-only logs db-clean prune
+.PHONY: help build up db-only logs db-clean prune i18n lint format
 
 # Default target
 help:
@@ -15,6 +15,7 @@ help:
 	@echo "  make logs     - Show logs from all services"
 	@echo "  make db-clean  - Stop & remove database container"
 	@echo "  make prune    - Remove all containers, images, and volumes"
+	@echo "  make i18n - Validate translation files against messages.json"
 	@echo "  make help     - Show this help message"
 
 # Build the Docker images
@@ -45,5 +46,22 @@ db-clean:
 prune:
 	@echo "Cleaning up all Docker resources..."
 	docker compose down -v --rmi all
+
+# Validate translation files
+i18n:
+	@echo "Validating translation files..."
+	@if [ -n "$(FILE)" ]; then \
+		./scripts/i18n-check.sh $(FILE); \
+	else \
+		./scripts/i18n-check.sh; \
+	fi
+
+lint:
+	@echo "Linting the project..."
+	npm run lint
+
+format:
+	@echo "Formatting the project..."
+	npm run format
 
 

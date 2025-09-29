@@ -55,8 +55,24 @@ Your app will be available at `http://localhost:5173`. You can use the Makefile 
 
 Use the `database/seed.sql` if you want to populate your database with dummy data.
 
+### i18n
+
+There is no proper i18n implemented, we have an `/i18n` folder with specific languages. To use an existing translation, just rename the language code JSON file to `messages.json` and you are ready to go. If you would like to add a new translation (which is really appreciated), just create a new `<language_code>.json` file and add the translations from the `messages.json`.
+
+The project includes a translation validation script to ensure all translation files are complete and up-to-date with the source `messages.json` file.
+
+```bash
+# Validate all translation files
+make i18n
+```
+
+```bash
+# Validate a specific translation file
+make i18n FILE=src/lib/i18n/it.json
+```
+
 ### License
 
-This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
+This project is licensed under the `AGPL-3.0 License` - see the [LICENSE](./LICENSE) file for details.
 
 **Made with ❤️ by @polaroi8d**
