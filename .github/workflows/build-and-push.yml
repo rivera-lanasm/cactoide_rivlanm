@@ -9,7 +9,6 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}/cactoide
-  PUBLIC_LANDING_INFO: true
 
 jobs:
   build-and-push:
