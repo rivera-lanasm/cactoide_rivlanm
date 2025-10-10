@@ -2,6 +2,7 @@
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import { t } from '$lib/i18n/i18n.js';
+	import { PUBLIC_LANDING_INFO } from '$env/static/public';
 
 	// Check if current page is active
 	const isActive = (path: string): boolean => {
@@ -24,12 +25,14 @@
 
 			<!-- Navigation -->
 			<div class="md:flex md:items-center md:space-x-8">
-				<button
-					on:click={() => goto('/')}
-					class={isActive('/') ? 'text-violet-400' : 'cursor-pointer'}
-				>
-					{t('navigation.home')}
-				</button>
+				{#if PUBLIC_LANDING_INFO !== 'false'}
+					<button
+						on:click={() => goto('/')}
+						class={isActive('/') ? 'text-violet-400' : 'cursor-pointer'}
+					>
+						{t('navigation.home')}
+					</button>
+				{/if}
 
 				<button
 					on:click={() => goto('/discover')}

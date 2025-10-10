@@ -55,7 +55,18 @@ Your app will be available at `http://localhost:5173`. You can use the Makefile 
 
 Use the `database/seed.sql` if you want to populate your database with dummy data.
 
-### i18n
+### Options
+
+#### 1. Landing page option
+
+Supports a conditional landing page display based on the `PUBLIC_LANDING_INFO` environment variable. If you don't want to show your users the cactoide landing page, just use the `PUBLIC_LANDING_INFO=false` variable. This will automatically remove the landing home page and redirect users to the `/discover` page.
+
+This is useful for:
+
+- Creating a minimal discovery-focused experience
+- Customizing the user journey based on deployment environment
+
+#### 2. i18n
 
 There is no proper i18n implemented, we have an `/i18n` folder with specific languages. To use an existing translation, just rename the language code JSON file to `messages.json` and you are ready to go. If you would like to add a new translation (which is really appreciated), just create a new `<language_code>.json` file and add the translations from the `messages.json`.
 
