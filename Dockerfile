@@ -5,6 +5,9 @@ COPY package*.json .
 RUN npm ci
 COPY . .
 
+ARG PUBLIC_LANDING_INFO
+ENV PUBLIC_LANDING_INFO=$PUBLIC_LANDING_INFO
+
 RUN npm run build
 RUN npm prune --production
 
