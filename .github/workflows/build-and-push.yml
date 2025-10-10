@@ -60,6 +60,7 @@ jobs:
         with:
           context: .
           file: ./Dockerfile
+          args: --build-arg PUBLIC_LANDING_INFO=true
           push: true
           platforms: linux/amd64,linux/arm64
           cache-from: type=gha
