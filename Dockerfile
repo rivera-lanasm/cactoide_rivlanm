@@ -2,7 +2,7 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 COPY package*.json .
 
-RUN npm ci --omit=dev
+RUN npm ci
 
 ARG PUBLIC_LANDING_INFO
 ENV PUBLIC_LANDING_INFO=$PUBLIC_LANDING_INFO
