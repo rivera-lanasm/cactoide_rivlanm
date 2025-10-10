@@ -5,6 +5,7 @@ yarn-error.log*
 .git
 .gitignore
 README.md
+.env
 .env.*
 !.env.example
 .nyc_output
