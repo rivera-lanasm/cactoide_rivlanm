@@ -28,6 +28,8 @@ jobs:
 
       - name: Build application
         run: npm run build
+        env:
+          PUBLIC_LANDING_INFO: ${{ vars.PUBLIC_LANDING_INFO }}
 
       - name: Test build output
         run: |

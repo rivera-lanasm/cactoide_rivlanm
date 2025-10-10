@@ -3,7 +3,7 @@
 	import Navbar from '$lib/components/Navbar.svelte';
 	import { t } from '$lib/i18n/i18n.js';
 
-	let { data } = $props();
+	let { data, children } = $props();
 </script>
 
 <svelte:head>
@@ -21,7 +21,7 @@
 
 		<!-- Main content -->
 		<main class="relative z-10">
-			<slot />
+			{@render children?.()}
 		</main>
 
 		<!-- Footer -->
