@@ -4,12 +4,12 @@ COPY package*.json .
 
 RUN npm ci
 COPY . .
+COPY .env .env
 
 EXPOSE 3000
 
 ENV PORT 3000
 ENV HOSTNAME "0.0.0.0"
-ENV PUBLIC_LANDING_INFO=true
 
 RUN npm run build
 RUN npm prune --production
