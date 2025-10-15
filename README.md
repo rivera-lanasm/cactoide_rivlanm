@@ -82,6 +82,19 @@ make i18n
 make i18n FILE=src/lib/i18n/it.json
 ```
 
+### Support
+
+Cactoide is an open-source project licensed under `AGPL-3.0`. Its growth and development are possible thanks to the amazing support of the community. This project is the result of many late nights, weekends, and after-hours work.
+
+It isn’t backed by a big company. Development depends on the support and generosity of people like you. With your help, I can focus more on making Cactoide even better and building tools that make coding more enjoyable.
+
+You can support in a few ways:
+
+- Send a one-time donation via [paypal.me/zenoazurben](paypal.me/zenoazurben)
+- Reach me directly: leventeorb[@]gmail.com
+
+If you enjoy using Cactoide, or if your business depends on it, please consider sponsoring its development. Your support keeps the project alive, improves it for everyone, and helps create educational content like blog posts and videos for the whole Cactoide community.
+
 ### License
 
 This project is licensed under the `AGPL-3.0 License` - see the [LICENSE](./LICENSE) file for details.
