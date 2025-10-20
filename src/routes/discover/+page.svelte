@@ -1,10 +1,13 @@
 <script lang="ts">
 	import type { Event, EventType } from '$lib/types';
 	import { goto } from '$app/navigation';
-	import type { PageData } from '../$types';
 	import { formatTime, formatDate, isEventInTimeRange } from '$lib/dateHelpers';
 	import { t } from '$lib/i18n/i18n.js';
 	import Fuse from 'fuse.js';
+
+	type DiscoverPageData = {
+		events: Event[];
+	};
 
 	let publicEvents: Event[] = [];
 	let error = '';
@@ -16,7 +19,7 @@
 	let showFilters = false;
 	let fuse: Fuse<Event>;
 
-	export let data: PageData;
+	export let data: DiscoverPageData;
 	// Use the server-side data
 	$: publicEvents = data?.events || [];
 
@@ -67,8 +70,15 @@
 
 		// Sort events by date and time
 		events = events.sort((a, b) => {
-			const dateA = new Date(`${a.date}T${a.time}`);
-			const dateB = new Date(`${b.date}T${b.time}`);
+			// Parse dates as local timezone to avoid timezone issues
+			const parseEventDateTime = (event: Event) => {
+				const [year, month, day] = event.date.split('-').map(Number);
+				const [hours, minutes, seconds] = event.time.split(':').map(Number);
+				return new Date(year, month - 1, day, hours, minutes, seconds || 0);
+			};
+
+			const dateA = parseEventDateTime(a);
+			const dateB = parseEventDateTime(b);
 
 			if (selectedSortOrder === 'asc') {
 				return dateA.getTime() - dateB.getTime();

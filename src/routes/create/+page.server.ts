@@ -56,7 +56,13 @@ export const actions: Actions = {
 			});
 		}
 
-		if (new Date(date) < new Date()) {
+		// Check if date is in the past using local timezone
+		const [year, month, day] = date.split('-').map(Number);
+		const eventDate = new Date(year, month - 1, day);
+		const today = new Date();
+		today.setHours(0, 0, 0, 0);
+
+		if (eventDate < today) {
 			return fail(400, {
 				error: 'Date cannot be in the past.',
 				values: {
@@ -105,7 +111,7 @@ export const actions: Actions = {
 				type: type,
 				attendeeLimit: type === 'limited' ? parseInt(attendeeLimit) : null,
 				visibility: visibility,
-				userId: userId
+				userId: userId!
 			})
 			.catch((error) => {
 				console.error('Unexpected error', error);

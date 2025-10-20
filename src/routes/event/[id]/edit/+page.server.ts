@@ -86,8 +86,9 @@ export const actions: Actions = {
 			});
 		}
 
-		// Check if date is in the past (but allow editing past events for corrections)
-		const eventDate = new Date(date);
+		// Check if date is in the past using local timezone (but allow editing past events for corrections)
+		const [year, month, day] = date.split('-').map(Number);
+		const eventDate = new Date(year, month - 1, day);
 		const today = new Date();
 		today.setHours(0, 0, 0, 0);
 

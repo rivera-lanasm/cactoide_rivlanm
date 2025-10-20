@@ -1,11 +1,14 @@
 import type { Event } from './types';
 
 export const formatDate = (dateString: string): string => {
-	const date = new Date(dateString);
-	const year = date.getFullYear();
-	const month = String(date.getMonth() + 1).padStart(2, '0');
-	const day = String(date.getDate()).padStart(2, '0');
-	return `${year}/${month}/${day}`;
+	// Parse the date string as local date to avoid timezone issues
+	// Split the date string and create a Date object in local timezone
+	const [year, month, day] = dateString.split('-').map(Number);
+	const date = new Date(year, month - 1, day); // month is 0-indexed in Date constructor
+	const formattedYear = date.getFullYear();
+	const formattedMonth = String(date.getMonth() + 1).padStart(2, '0');
+	const formattedDay = String(date.getDate()).padStart(2, '0');
+	return `${formattedYear}/${formattedMonth}/${formattedDay}`;
 };
 
 export const formatTime = (timeString: string): string => {
@@ -17,7 +20,10 @@ export const formatTime = (timeString: string): string => {
 export const isEventInTimeRange = (event: Event, timeFilter: string): boolean => {
 	if (timeFilter === 'any') return true;
 
-	const eventDate = new Date(`${event.date}T${event.time}`);
+	// Parse date and time as local timezone to avoid timezone issues
+	const [year, month, day] = event.date.split('-').map(Number);
+	const [hours, minutes, seconds] = event.time.split(':').map(Number);
+	const eventDate = new Date(year, month - 1, day, hours, minutes, seconds || 0);
 	const now = new Date();
 
 	// Handle temporal status filters
