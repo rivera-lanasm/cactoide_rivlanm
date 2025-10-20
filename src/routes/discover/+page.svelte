@@ -5,6 +5,10 @@
 	import { t } from '$lib/i18n/i18n.js';
 	import Fuse from 'fuse.js';
 
+	type DiscoverPageData = {
+		events: Event[];
+	};
+
 	let publicEvents: Event[] = [];
 	let error = '';
 	let searchQuery = '';
@@ -15,7 +19,7 @@
 	let showFilters = false;
 	let fuse: Fuse<Event>;
 
-	export let data: any;
+	export let data: DiscoverPageData;
 	// Use the server-side data
 	$: publicEvents = data?.events || [];
 
