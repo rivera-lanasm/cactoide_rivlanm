@@ -15,7 +15,10 @@ export interface CalendarEvent {
  * Formats a date and time string for iCal format (UTC)
  */
 export const formatDateForICal = (date: string, time: string): string => {
-	const eventDate = new Date(`${date}T${time}`);
+	// Parse date and time as local timezone to avoid timezone issues
+	const [year, month, day] = date.split('-').map(Number);
+	const [hours, minutes, seconds] = time.split(':').map(Number);
+	const eventDate = new Date(year, month - 1, day, hours, minutes, seconds || 0);
 	return eventDate.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
 };
 
