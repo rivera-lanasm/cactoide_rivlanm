@@ -37,7 +37,7 @@ Uses the [`docker-compose.yml`](docker-compose.yml) file to setup the applicatio
 ```bash
 git clone https://github.com/polaroi8d/cactoide/
 cd cactoide
-cp env.example .env
+cp .env.docker.example .env
 docker compose up -d
 ```
 
@@ -46,7 +46,7 @@ docker compose up -d
 ```bash
 git clone https://github.com/polaroi8d/cactoide/
 cd cactoide
-cp env.example .env
+cp .env.example .env
 make db-only
 npm run dev -- --open
 ```
